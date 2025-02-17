@@ -1,0 +1,76 @@
+@page "/Register"
+
+<Div Class="d-flex justify-content-center align-items-center vh-100">
+    <Div Margin="Margin.IsAuto.OnX" Width="Width.Is50">
+        <Heading Size="HeadingSize.Is2" Margin="Margin.Is3.FromBottom" TextAlignment="TextAlignment.Center">
+            Create an account
+        </Heading>
+
+        <Card Shadow="Shadow.Default">
+            <CardBody>
+                <Validations @ref="fluentValidation" Mode="ValidationMode.Manual" Model="registerModel" HandlerType="typeof(FluentValidationHandler)">
+                    <Form>
+                        <Field>
+                            <FieldLabel>
+                                Your First Name
+                            </FieldLabel>
+                            <FieldBody>
+                                <Validation>
+                                    <TextEdit Placeholder="John" @bind-Text="registerModel.FirstName"/>
+                                </Validation>
+                            </FieldBody>
+                        </Field>
+                        <Field>
+                            <FieldLabel>
+                                Your Last Name
+                            </FieldLabel>
+                            <FieldBody>
+                                <Validation>
+                                    <TextEdit Placeholder="Doe" @bind-Text="registerModel.LastName"/>
+                                </Validation>
+                            </FieldBody>
+                        </Field>
+                        <Field>
+                            <FieldLabel>
+                                Your Email
+                            </FieldLabel>
+                            <FieldBody>
+                                <Validation>
+                                    <TextEdit Placeholder="name@blazorise.com" Role="TextRole.Email" @bind-Text="registerModel.Email"/>
+                                </Validation>
+                            </FieldBody>
+                        </Field>
+                        <Field>
+                            <FieldLabel>
+                                Password
+                            </FieldLabel>
+                            <FieldBody>
+                                <Validation>
+                                    <TextEdit Placeholder="********" Role="TextRole.Password" autocomplete="new-password" @bind-Text="registerModel.Password"/>
+                                </Validation>
+                            </FieldBody>
+                        </Field>
+                        <Field>
+                            <FieldLabel>
+                                Confirm Password
+                            </FieldLabel>
+                            <FieldBody>
+                                <Validation>
+                                    <TextEdit Placeholder="********" Role="TextRole.Password" autocomplete="new-password" @bind-Text="registerModel.ConfirmPassword"/>
+                                </Validation>
+                            </FieldBody>
+                        </Field>
+                        <Field>
+                            <Button Color="Color.Primary" Block @onclick="OnRegister">
+                                Create an account
+                            </Button>
+                        </Field>
+                        <Field>
+                            Already have an account? <Anchor To="/login" TextColor="TextColor.Primary">Login here</Anchor>
+                        </Field>
+                    </Form>
+                </Validations>
+            </CardBody>
+        </Card>
+    </Div>
+</Div>

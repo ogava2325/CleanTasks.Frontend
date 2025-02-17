@@ -1,0 +1,54 @@
+@page "/Login"
+
+<Div Class="d-flex justify-content-center align-items-center vh-100">
+    <Div Margin="Margin.IsAuto.OnX" Width="Width.Is50">
+        <Heading Size="HeadingSize.Is2" Margin="Margin.Is3.FromBottom" TextAlignment="TextAlignment.Center">
+            Sign in to your account
+        </Heading>
+        <Card Shadow="Shadow.Default">
+            <CardBody>
+                <Validations @ref="_fluentValidation" Mode="ValidationMode.Manual" Model="_loginModel" HandlerType="typeof(FluentValidationHandler)">
+                    <Form>
+
+                        <Field>
+                            <FieldLabel>
+                                Email
+                            </FieldLabel>
+                            <FieldBody>
+                                <Validation>
+                                    <TextEdit Placeholder="name@blazorise.com" Role="TextRole.Email" @bind-Text="_loginModel.Email"/>
+                                </Validation>
+                            </FieldBody>
+                        </Field>
+                        <Field>
+                            <FieldLabel>
+                                Password
+                            </FieldLabel>
+                            <FieldBody>
+                                <Validation>
+                                    <TextEdit Placeholder="********" Role="TextRole.Password" @bind-Text="_loginModel.Password"/>
+                                </Validation>
+                            </FieldBody>
+                        </Field>
+                        <Field Flex="Flex.Wrap.JustifyContent.Between">
+                            <Check TValue="bool">
+                                Remember me
+                            </Check>
+                            <Anchor To="#" TextColor="TextColor.Primary">
+                                Forgot your password?
+                            </Anchor>
+                        </Field>
+                        <Field>
+                            <Button Color="Color.Primary" Block @onclick="OnLogin">
+                                Sign in
+                            </Button>
+                        </Field>
+                        <Field>
+                            Don’t have an account yet? <Anchor To="/register" TextColor="TextColor.Primary">Sign up</Anchor>
+                        </Field>
+                    </Form>
+                </Validations>
+            </CardBody>
+        </Card>
+    </Div>
+</Div>

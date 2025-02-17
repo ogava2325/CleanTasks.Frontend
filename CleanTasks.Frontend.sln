@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{F65C6E9C-D856-4E31-BABD-FC8F99B7D17B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Abstraction", "Services.Abstraction\Services.Abstraction.csproj", "{0F9CDD74-B882-47F4-A630-EC9CD36CAF20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{F65C6E9C-D856-4E31-BABD-FC8F99B7D17B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F65C6E9C-D856-4E31-BABD-FC8F99B7D17B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F65C6E9C-D856-4E31-BABD-FC8F99B7D17B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F9CDD74-B882-47F4-A630-EC9CD36CAF20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F9CDD74-B882-47F4-A630-EC9CD36CAF20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F9CDD74-B882-47F4-A630-EC9CD36CAF20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F9CDD74-B882-47F4-A630-EC9CD36CAF20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

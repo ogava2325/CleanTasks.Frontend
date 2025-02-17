@@ -1,0 +1,42 @@
+@page "/roles"
+@attribute [Authorize]
+
+@using Domain.Dtos.Roles
+@using Blazorise.DataGrid
+@using global::Services.External
+@using Microsoft.AspNetCore.Authorization
+@using UI.Services
+@inject IRoleService RoleService
+@inject CustomAuthStateProvider AuthStateProvider
+
+<PageTitle>Roles</PageTitle>
+
+<Button Color="Color.Primary" Clicked="LoadRoles">Load Roles</Button>
+
+<DataGrid TItem="RoleDto"
+          Data="@roles"
+          Responsive>
+    <DataGridColumn Field="@nameof(RoleDto.Id)" Caption="Id"/>
+    <DataGridColumn Field="@nameof(RoleDto.Name)" Caption="Name"/>
+</DataGrid>
+
+
+@code {
+    private List<RoleDto> roles;
+    
+
+    private async Task LoadRoles()
+    {
+        try
+        {
+            var token = await AuthStateProvider.GetToken();
+            roles = (await RoleService.GetAllAsync($"Bearer {token}")).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching roles: {ex.Message}");
+        }
+    }
+
+}
+
