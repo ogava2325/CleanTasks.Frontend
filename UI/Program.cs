@@ -33,8 +33,9 @@ builder.Services.AddRefitClient<IUserService>()
 
 builder.Services.AddRefitClient<IRoleService>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-    
 
+builder.Services.AddRefitClient<IProjectService>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

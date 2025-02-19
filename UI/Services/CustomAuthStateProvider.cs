@@ -46,7 +46,7 @@ public class CustomAuthStateProvider(NavigationManager navigation, ProtectedSess
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
         navigation.NavigateTo("login");
     }
-    
+
     public async Task<string> GetToken()
     {
         var sessionResult = await sessionStorage.GetAsync<string>(TokenKey);
@@ -55,7 +55,22 @@ public class CustomAuthStateProvider(NavigationManager navigation, ProtectedSess
         {
             return string.Empty;
         }
-        
+
         return sessionResult.Value;
+    }
+
+    public async Task<Guid> GetUserIdAsync()
+    {
+        var sessionResult = await sessionStorage.GetAsync<string>(TokenKey);
+
+        if (!sessionResult.Success || string.IsNullOrEmpty(sessionResult.Value))
+        {
+            return Guid.Empty;
+        }
+
+        var claims = JwtParser.ParseClaimsFromJwt(sessionResult.Value);
+        var userIdString = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        return Guid.TryParse(userIdString, out var userId) ? userId : Guid.Empty;
     }
 }
