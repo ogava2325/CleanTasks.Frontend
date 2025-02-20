@@ -1,0 +1,12 @@
+<Card Background="Background.Light" Height="Height.Is100" @onclick="OnClick" Style="cursor: pointer">
+    <CardBody>
+        <CardTitle Size="4">
+            Create new project
+            <Icon Name="IconName.Add"></Icon>
+        </CardTitle>
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnClick { get; set; }
+}

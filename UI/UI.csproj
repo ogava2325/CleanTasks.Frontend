@@ -12,6 +12,7 @@
       <PackageReference Include="Blazorise.DataGrid" Version="1.7.3" />
       <PackageReference Include="Blazorise.FluentValidation" Version="1.6.2" />
       <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.7.3" />
+      <PackageReference Include="Blazorise.LoadingIndicator" Version="1.6.2" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
       <PackageReference Include="Refit" Version="8.0.0" />
       <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
@@ -20,6 +21,10 @@
     <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\Services\Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\images\" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,71 @@
+@using Blazorise
+@using Domain.Dtos.Project
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Create New Project</ModalTitle>
+            <CloseButton Clicked="OnCancel"/>
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="fluentValidation" Mode="ValidationMode.Manual" Model="NewProject" HandlerType="typeof(FluentValidationHandler)">
+                <Field>
+                    <Label>Project Title</Label>
+                    <Validation>
+                        <TextEdit @bind-Text="NewProject.Title"/>
+                    </Validation>
+                </Field>
+                <Field>
+                    <Label>Description</Label>
+                    <Validation>
+                        <TextEdit @bind-Text="NewProject.Description"/>
+                    </Validation>
+                </Field>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="OnCancel">
+                Cancel
+            </Button>
+            <Button Color="Color.Primary" Clicked="OnCreateProject">
+                Create new project
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+    private Modal ModalRef;
+    private Validations fluentValidation;
+
+    [Parameter] public CreateProjectDto NewProject { get; set; } = new();
+    [Parameter] public EventCallback OnCancelClicked { get; set; }
+    [Parameter] public EventCallback<CreateProjectDto> OnCreateClicked { get; set; }
+
+    public async Task Show()
+    {
+        NewProject = new CreateProjectDto(); // Reset form
+        await ModalRef.Show();
+    }
+
+    public async Task Hide()
+    {
+        await ModalRef.Hide();
+    }
+
+    private async Task OnCancel()
+    {
+        await Hide();
+        if (OnCancelClicked.HasDelegate)
+            await OnCancelClicked.InvokeAsync();
+    }
+
+    private async Task OnCreateProject()
+    {
+        if (await fluentValidation.ValidateAll())
+        {
+            if (OnCreateClicked.HasDelegate)
+                await OnCreateClicked.InvokeAsync(NewProject);
+        }
+    }
+}

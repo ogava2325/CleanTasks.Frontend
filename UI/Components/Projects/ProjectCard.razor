@@ -1,0 +1,15 @@
+@using Domain.Dtos.Project
+
+<Card Height="Height.Is100"
+      Style="background-image: url('images/defatult_background.jpg'); 
+          color: white;">
+    <CardBody>
+        <CardTitle Size="4">
+            @Project.Title
+        </CardTitle>
+    </CardBody>
+</Card>
+
+@code {
+[Parameter, EditorRequired] public ProjectDto Project { get; set; }
+}
