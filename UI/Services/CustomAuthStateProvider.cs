@@ -73,4 +73,29 @@ public class CustomAuthStateProvider(NavigationManager navigation, ProtectedSess
 
         return Guid.TryParse(userIdString, out var userId) ? userId : Guid.Empty;
     }
+
+    public async Task<UserInfo> GetUserAsync()
+    {
+        var token = await GetToken();
+        if (string.IsNullOrEmpty(token))
+        {
+            return new UserInfo();
+        }
+
+        var claims = JwtParser.ParseClaimsFromJwt(token);
+
+        return new UserInfo
+        {
+            Id = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value,
+            Name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? "User",
+            Email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? "Unknown"
+        };
+    }
+}
+
+public class UserInfo
+{
+    public string? Id { get; set; }
+    public string? Name { get; set; }
+    public string Email { get; set; }
 }

@@ -9,34 +9,35 @@
 @inject IRoleService RoleService
 @inject CustomAuthStateProvider AuthStateProvider
 
-<PageTitle>Roles</PageTitle>
+<Container Margin="Margin.Is0" Padding="Padding.Is2" Fluid>
 
-<Button Color="Color.Primary" Clicked="LoadRoles">Load Roles</Button>
+    <Button Color="Color.Primary" Clicked="LoadRoles">Load Roles</Button>
 
-<DataGrid TItem="RoleDto"
-          Data="@roles"
-          Responsive>
-    <DataGridColumn Field="@nameof(RoleDto.Id)" Caption="Id"/>
-    <DataGridColumn Field="@nameof(RoleDto.Name)" Caption="Name"/>
-</DataGrid>
+    <DataGrid TItem="RoleDto"
+              Data="@roles"
+              Responsive>
+        <DataGridColumn Field="@nameof(RoleDto.Id)" Caption="Id"/>
+        <DataGridColumn Field="@nameof(RoleDto.Name)" Caption="Name"/>
+    </DataGrid>
 
 
-@code {
-    private List<RoleDto> roles;
-    
+    @code {
+        private List<RoleDto> roles;
 
-    private async Task LoadRoles()
-    {
-        try
+
+        private async Task LoadRoles()
         {
-            var token = await AuthStateProvider.GetToken();
-            roles = (await RoleService.GetAllAsync($"Bearer {token}")).ToList();
+            try
+            {
+                var token = await AuthStateProvider.GetToken();
+                roles = (await RoleService.GetAllAsync($"Bearer {token}")).ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching roles: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching roles: {ex.Message}");
-        }
+
     }
 
-}
-
+</Container>

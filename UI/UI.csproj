@@ -27,4 +27,10 @@
       <Folder Include="wwwroot\images\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="Components\Shared\TopBar.razor.cs">
+        <DependentUpon>TopBar.razor</DependentUpon>
+      </Content>
+    </ItemGroup>
+
 </Project>
