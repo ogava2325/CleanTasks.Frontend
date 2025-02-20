@@ -1,4 +1,6 @@
 @page "/Projects"
+@using UI.Components.Modals
+@using UI.Components.Projects
 
 <PageTitle>My projects</PageTitle>
 
@@ -10,19 +12,10 @@
     </Row>
 
     <Row Class="mt-3">
-
         @foreach (var project in UserProjects)
         {
             <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnMobile.Is4.OnDesktop.Is3.OnWidescreen.Is3.OnFullHD" Class="mb-4">
-                <Card Height="Height.Is100"
-                      Style="background-image: url('images/defatult_background.jpg'); 
-                          color: white;">
-                    <CardBody>
-                        <CardTitle Size="4">
-                            @project.Title
-                        </CardTitle>
-                    </CardBody>
-                </Card>
+                <ProjectCard Project="@project"/>
             </Column>
         }
 
@@ -34,49 +27,12 @@
         }
 
         <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnMobile.Is4.OnDesktop.Is3.OnWidescreen.Is3.OnFullHD" Class="mb-4">
-            <Card Background="Background.Light" Height="Height.Is100" @onclick="@ShowModal" Style="cursor: pointer">
-                <CardBody Class="card-body">
-                    <CardTitle Size="4">
-                        Create new project
-                        <Icon Name="IconName.Add"></Icon>
-                    </CardTitle>
-                </CardBody>
-            </Card>
+            <CreateProjectCard OnClick="@ShowModal"/>
         </Column>
     </Row>
-
-    <Modal @ref="_modalRef">
-        <ModalContent Centered>
-            <ModalHeader>
-                <ModalTitle>Create New Project</ModalTitle>
-                <CloseButton/>
-            </ModalHeader>
-            <ModalBody>
-                <Validations @ref="fluentValidation" Mode="ValidationMode.Manual" Model="_newProject" HandlerType="typeof(FluentValidationHandler)">
-                    <Field>
-                        <Label>Project Title</Label>
-                        <Validation>
-                            <TextEdit @bind-Text="_newProject.Title"/>
-                        </Validation>
-                    </Field>
-                    <Field>
-                        <Label>Description</Label>
-                        <Validation>
-                            <TextEdit @bind-Text="_newProject.Description"/>
-                        </Validation>
-                    </Field>
-                </Validations>
-            </ModalBody>
-            <ModalFooter>
-                <Button Color="Color.Secondary"
-                        Clicked="@HideModal">
-                    Cancel
-                </Button>
-                <Button Color="Color.Primary"
-                        Clicked="@CreateProject">
-                    Create new project
-                </Button>
-            </ModalFooter>
-        </ModalContent>
-    </Modal>
+    
+    <CreateProjectModal @ref="@_projectModalRef"
+                        NewProject="@_newProject"
+                        OnCancelClicked="@HideModal"
+                        OnCreateClicked="@CreateProject"/>
 </Container>

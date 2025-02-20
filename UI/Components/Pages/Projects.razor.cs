@@ -2,6 +2,7 @@ using Blazorise;
 using Domain.Dtos.Project;
 using Microsoft.AspNetCore.Components;
 using Services.External;
+using UI.Components.Modals;
 using UI.Services;
 using Modal = Blazorise.Modal;
 
@@ -15,9 +16,8 @@ public partial class Projects : ComponentBase
     private List<ProjectDto> UserProjects { get; set; } = [];
     private CreateProjectDto _newProject = new();
 
-    private Modal? _modalRef;
+    private CreateProjectModal _projectModalRef;
 
-    Validations fluentValidation;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,37 +42,28 @@ public partial class Projects : ComponentBase
         // Reset form
         _newProject = new CreateProjectDto();
 
-        if (_modalRef is not null)
-        {
-            await _modalRef.Show();
-        }
+        await _projectModalRef.Show();
     }
 
     private async Task HideModal()
     {
-        if (_modalRef is not null)
-        {
-            await _modalRef.Hide();
-        }
+        await _projectModalRef.Hide();
     }
 
     private async Task CreateProject()
     {
-        if (await fluentValidation.ValidateAll())
+        try
         {
-            try
-            {
-                _newProject.UserId = await AuthStateProvider.GetUserIdAsync();
-                _newProject.RoleId = Guid.Parse("E9011C0D-111E-46C0-9CFC-3E1C9B043804");
+            _newProject.UserId = await AuthStateProvider.GetUserIdAsync();
+            _newProject.RoleId = Guid.Parse("E9011C0D-111E-46C0-9CFC-3E1C9B043804");
 
-                await ProjectService.CreateAsync(_newProject);
-                await LoadProjects();
-                await HideModal();
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine($"Error creating project: {exception.Message}");
-            }
+            await ProjectService.CreateAsync(_newProject);
+            await LoadProjects();
+            await HideModal();
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine($"Error creating project: {exception.Message}");
         }
     }
 }
