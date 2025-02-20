@@ -1,5 +1,4 @@
 @page "/Projects"
-@using Domain.Dtos.Project
 
 <PageTitle>My projects</PageTitle>
 
@@ -11,24 +10,23 @@
     </Row>
 
     <Row Class="mt-3">
-        @if (UserProjects.Any())
+
+        @foreach (var project in UserProjects)
         {
-            @foreach (var project in UserProjects)
-            {
-                <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnMobile.Is4.OnDesktop.Is3.OnWidescreen.Is3.OnFullHD" Class="mb-4">
-                    <Card Height="Height.Is100"
-                          Style="background-image: url('images/defatult_background.jpg'); 
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnMobile.Is4.OnDesktop.Is3.OnWidescreen.Is3.OnFullHD" Class="mb-4">
+                <Card Height="Height.Is100"
+                      Style="background-image: url('images/defatult_background.jpg'); 
                           color: white;">
-                        <CardBody>
-                            <CardTitle Size="4">
-                                @project.Title
-                            </CardTitle>
-                        </CardBody>
-                    </Card>
-                </Column>
-            }
+                    <CardBody>
+                        <CardTitle Size="4">
+                            @project.Title
+                        </CardTitle>
+                    </CardBody>
+                </Card>
+            </Column>
         }
-        else
+
+        @if (!UserProjects.Any())
         {
             <Column>
                 <Paragraph>No projects found.</Paragraph>

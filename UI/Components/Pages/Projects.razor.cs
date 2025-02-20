@@ -29,7 +29,7 @@ public partial class Projects : ComponentBase
         try
         {
             var userId = await AuthStateProvider.GetUserIdAsync();
-            UserProjects = (await ProjectService.GetProjectsByUserId(userId)).ToList();
+            UserProjects = (await ProjectService.GetByUserId(userId)).ToList();
         }
         catch (Exception exception)
         {
@@ -65,7 +65,7 @@ public partial class Projects : ComponentBase
                 _newProject.UserId = await AuthStateProvider.GetUserIdAsync();
                 _newProject.RoleId = Guid.Parse("E9011C0D-111E-46C0-9CFC-3E1C9B043804");
 
-                await ProjectService.CreateProject(_newProject);
+                await ProjectService.CreateAsync(_newProject);
                 await LoadProjects();
                 await HideModal();
             }

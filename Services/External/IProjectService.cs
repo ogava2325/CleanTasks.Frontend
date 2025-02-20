@@ -6,8 +6,8 @@ namespace Services.External;
 public interface IProjectService
 {
     [Get("/api/projects/{userId}")]
-    Task<IEnumerable<ProjectDto>> GetProjectsByUserId(Guid userId);
+    Task<IEnumerable<ProjectDto>> GetByUserId(Guid userId);
     
     [Post("/api/projects")]
-    Task<ProjectDto> CreateProject([Body] CreateProjectDto command);
+    Task<ProjectDto> CreateAsync([Body] CreateProjectDto command);
 }
