@@ -66,4 +66,18 @@ public partial class Projects : ComponentBase
             Console.WriteLine($"Error creating project: {exception.Message}");
         }
     }
+    
+    private async Task DeleteProject(Guid projectId)
+    {
+        try
+        {
+            await ProjectService.DeleteAsync(projectId);
+            UserProjects.RemoveAll(p => p.Id == projectId);
+            StateHasChanged(); 
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting project: {ex.Message}");
+        }
+    }
 }

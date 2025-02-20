@@ -10,4 +10,7 @@ public interface IProjectService
     
     [Post("/api/projects")]
     Task<ProjectDto> CreateAsync([Body] CreateProjectDto command);
+    
+    [Delete("/api/projects/{id}")]
+    Task DeleteAsync(Guid id);
 }

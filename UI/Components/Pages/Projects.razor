@@ -15,7 +15,7 @@
         @foreach (var project in UserProjects)
         {
             <Column ColumnSize="ColumnSize.Is12.OnTablet.Is12.OnMobile.Is4.OnDesktop.Is3.OnWidescreen.Is3.OnFullHD" Class="mb-4">
-                <ProjectCard Project="@project"/>
+                <ProjectCard Project="@project" OnDelete="DeleteProject"/>
             </Column>
         }
 
