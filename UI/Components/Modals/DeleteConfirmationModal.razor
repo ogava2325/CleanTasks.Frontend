@@ -1,0 +1,24 @@
+<Modal @bind-Visible="@IsVisible">
+    <ModalContent Centered>
+        <ModalHeader TextColor="TextColor.Dark">
+            <ModalTitle TextColor="TextColor.Black50">@Title</ModalTitle>
+            <CloseButton Clicked="@CloseModal"/>
+        </ModalHeader>
+        <ModalBody>
+            <Div Flex="Flex.JustifyContent.Center.AlignItems.Center" Padding="Padding.Is3">
+                <Icon Name="IconName.Delete" IconSize="IconSize.x3" TextColor="TextColor.Dark" />
+            </Div>
+            <Paragraph TextAlignment="TextAlignment.Center" TextColor="TextColor.Black50">
+                @Message
+            </Paragraph>
+        </ModalBody>
+        <ModalFooter Flex="Flex.JustifyContent.Center.AlignItems.Center" Gap="Gap.Is3">
+            <Button Color="Color.Secondary" Outline Clicked="@CloseModal">
+                No, cancel
+            </Button>
+            <Button Color="Color.Danger" Clicked="@Confirm">
+                Yes, I'm sure
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
