@@ -3,7 +3,7 @@
 
 <Card Height="Height.Is100"
       Style="background-image: url('images/defatult_background.jpg'); 
-          color: white;">
+          color: white;" @onclick="() => NavigateToKanban(Project.Id)">
     <CardBody>
         <CardTitle Size="4">
             @Project.Title
@@ -15,30 +15,36 @@
         Clicked="ShowDeleteConfirmation">
         <Icon Name="IconName.Delete" TextColor="TextColor.White50"></Icon>
     </Button>
-    
+
     <DeleteConfirmationModal @ref="_confirmationModal"
                              Title="Delete Project"
                              Message="Are you sure you want to delete this project?"
                              OnConfirm="HandleDeleteConfirmation"/>
-    
+
 </Card>
 
 @code {
+    [Inject] NavigationManager NavigationManager { get; set; }
     [Parameter, EditorRequired] public ProjectDto Project { get; set; }
     [Parameter] public EventCallback<Guid> OnDelete { get; set; }
 
     private DeleteConfirmationModal _confirmationModal;
-    
+
     private async Task ShowDeleteConfirmation()
     {
         await _confirmationModal.Show();
     }
-    
+
     private async Task HandleDeleteConfirmation(bool confirmed)
     {
         if (confirmed && OnDelete.HasDelegate)
         {
             await OnDelete.InvokeAsync(Project.Id);
         }
+    }
+
+    private void NavigateToKanban(Guid projectId)
+    {
+        NavigationManager.NavigateTo($"/Kanban/{projectId}");
     }
 }

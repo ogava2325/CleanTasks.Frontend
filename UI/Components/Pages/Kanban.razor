@@ -1,0 +1,138 @@
+@page "/Kanban/{projectId:guid}"
+@using Domain.Dtos.Card
+
+<DropContainer TItem="CardDto" Items="@_cards"
+               ItemsFilter="@((item, dropZone) => item.ColumnId.ToString() == dropZone)"
+               ItemDropped="@ItemDropped"
+               Style="
+               display: flex; 
+               align-items: flex-start; 
+               gap: 20px; 
+               padding: 20px; 
+               flex-wrap: nowrap;"
+               @key="@_cards.Count">
+    <ChildContent>
+        @foreach (var column in _columns)
+        {
+            <Div Style="
+                background: #f4f5f7; 
+                border-radius: 8px; 
+                padding: 10px; 
+                width: 300px;
+                display: flex; 
+                flex-direction: column; 
+                flex-shrink: 0;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);"
+                 Margin="Margin.Is0" Border="Border.Rounded">
+
+                <Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom.Is1.FromStart">
+                    @column.Title
+                </Heading>
+
+                <DropZone TItem="CardDto" Name="@column.Id.ToString()"
+                          AllowReorder
+                          DraggingClass="draggable-card.dragging"
+                          Style="
+                          display: flex; 
+                          flex-direction: column; 
+                          gap: 10px;
+                          min-height: 50px;  /* Ensures visible space even if empty */">
+                </DropZone>
+
+                @if (_activeColumnId == column.Id)
+                {
+                    <TextEdit @bind-Text="@_newCard.Title" Placeholder="Enter card title..."
+                              Style="
+                              width: 100%; 
+                              margin-top: 10px;
+                              padding: 10px; 
+                              border-radius: 8px; 
+                              border: 1px solid #d1d1d1;
+                              background: white; 
+                              box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);"/>
+
+                    <Div Style="
+                            display: flex; 
+                            gap: 10px; 
+                            justify-content: flex-end; 
+                            margin-top: 5px;">
+                        <Button Style="width: 100%"
+                                Color="Color.Success" Clicked="() => CreateCardAsync(column.Id)">
+                            Add
+                        </Button>
+
+                        <Button Style="width: 100%"
+                                Color="Color.Secondary" Clicked="() => CancelAddingCard()">
+                            Cancel
+                        </Button>
+                    </Div>
+                }
+                else
+                {
+                    <Button Color="Color.Primary"
+                            Style="
+                        width: 100%; margin-top: 10px;"
+                            Clicked="@(() => StartAddingCard(column.Id))">
+                        Add Card
+                    </Button>
+                }
+            </Div>
+        }
+
+        <Div Style="
+            background: #f4f5f7; 
+            border-radius: 8px; 
+            padding: 10px; 
+            width: 300px;
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+            flex-shrink: 0;">
+
+            @if (_isAddingColumn)
+            {
+                <TextEdit @bind-Text="@_newColumn.Title" Placeholder="Enter column title..."
+                          Style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #d1d1d1; background: white; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);"/>
+                
+                <Div Style="
+                            display: flex; 
+                            gap: 10px; 
+                            justify-content: flex-end; 
+                            margin-top: 5px;">
+                    <Button Style="width: 100%"
+                            Color="Color.Success" Clicked="CreateColumnAsync">
+                        Add
+                    </Button>
+
+                    <Button Style="width: 100%"
+                            Color="Color.Secondary" Clicked="CancelAddingColumn">
+                        Cancel
+                    </Button>
+                </Div>
+            }
+            else
+            {
+                <Button Color="Color.Primary"
+                        Style="width: 100%;"
+                        Clicked="StartAddingColumn">
+                    + Add Another Column
+                </Button>
+            }
+        </Div>
+
+    </ChildContent>
+
+    <ItemTemplate>
+        <Card Shadow="Shadow.Default"
+              Class="draggable-card"
+              Style="
+              border-radius: 8px; 
+              background: white; 
+              box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); 
+              width: 100%;">
+            <CardBody>
+                @context.Title
+            </CardBody>
+        </Card>
+    </ItemTemplate>
+</DropContainer>
