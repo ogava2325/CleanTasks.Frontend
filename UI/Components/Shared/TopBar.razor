@@ -1,0 +1,31 @@
+<Bar Breakpoint="Breakpoint.Desktop"
+     Background="Background.White"
+     Shadow="Shadow.Default"
+     ThemeContrast="ThemeContrast.Light"
+     Padding="Padding.Is3.OnX">
+    <BarBrand>
+        <BarItem>
+            <BarLink To="">
+                <BarIcon IconName="IconName.Bug"/>
+                Clean Tasks
+            </BarLink>
+        </BarItem>
+    </BarBrand>
+    <BarToggler/>
+    <BarMenu>
+        <BarStart>
+            <BarItem>
+                <BarLink To="/">Home</BarLink>
+            </BarItem>
+        </BarStart>
+        <BarEnd>
+            <BarItem>
+                <BarDropdown>
+                    <BarDropdownItem Clicked="Logout">
+                        Logout
+                    </BarDropdownItem>
+                </BarDropdown>
+            </BarItem>
+        </BarEnd>
+    </BarMenu>
+</Bar>

@@ -37,6 +37,12 @@ builder.Services.AddRefitClient<IRoleService>()
 builder.Services.AddRefitClient<IProjectService>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
 
+builder.Services.AddRefitClient<IColumnService>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
+
+builder.Services.AddRefitClient<ICardService>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
