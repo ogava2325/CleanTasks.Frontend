@@ -9,7 +9,7 @@ public interface ICardService
     Task<IEnumerable<CardDto>> GetByColumnId(Guid columnId);
     
     [Post("/api/cards")]
-    Task<CardDto> CreateAsync([Body] CreateCardDto command);
+    Task<Guid> CreateAsync([Body] CreateCardDto command);
     
     [Get("/api/cards")]
     Task<IEnumerable<CardDto>> GetAll();

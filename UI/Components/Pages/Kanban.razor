@@ -1,5 +1,6 @@
 @page "/Kanban/{projectId:guid}"
 @using Domain.Dtos.Card
+@using UI.Components.Modals
 
 <DropContainer TItem="CardDto" Items="@_cards"
                ItemsFilter="@((item, dropZone) => item.ColumnId.ToString() == dropZone)"
@@ -120,17 +121,20 @@
             }
         </Div>
 
+        <CardDetailsModal @ref="_cardDetailsModalRef"
+                          CardId="@_selectedCardId"
+                          OnCancelClicked="@HideModal"/>
+        
     </ChildContent>
 
     <ItemTemplate>
         <Card Shadow="Shadow.Default"
-              Class="draggable-card"
               Style="
               border-radius: 8px; 
               background: white; 
               box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); 
               width: 100%;">
-            <CardBody>
+            <CardBody @onclick="@(() => ShowModal(context))">
                 @context.Title
             </CardBody>
         </Card>

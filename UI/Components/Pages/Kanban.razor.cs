@@ -1,14 +1,17 @@
 using Blazorise;
 using Domain.Dtos.Card;
 using Domain.Dtos.Column;
+using Domain.Dtos.State;
 using Microsoft.AspNetCore.Components;
 using Services.External;
+using UI.Components.Modals;
 
 namespace UI.Components.Pages;
 
 public partial class Kanban : ComponentBase
 {
     [Inject] private ICardService CardService { get; set; }
+    [Inject] private IStateService StateService { get; set; }
     [Inject] private IColumnService ColumnService { get; set; }
     [Parameter] public Guid ProjectId { get; set; }
 
@@ -20,6 +23,10 @@ public partial class Kanban : ComponentBase
     
     private bool _isAddingColumn;
     private Guid? _activeColumnId; 
+    
+    private Guid _selectedCardId;
+    
+    private CardDetailsModal _cardDetailsModalRef;
     
     protected override async Task OnInitializedAsync()
     {
@@ -90,8 +97,25 @@ public partial class Kanban : ComponentBase
 
         try
         {
-            await CardService.CreateAsync(newCardDto);
+            var cardId = await CardService.CreateAsync(newCardDto);
             await LoadCardsAsync();
+
+            try
+            {
+                var newState = new CreateStateDto
+                {
+                    CardId = cardId,
+                    Status = Status.Pending,
+                    Priority = Priority.Low,
+                    Description = string.Empty
+                }; 
+                
+                await StateService.CreateAsync(newState);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error creating states for the card: {e.Message}");
+            }
         }
         catch (Exception e)
         {
@@ -181,5 +205,16 @@ public partial class Kanban : ComponentBase
             .Select(c => c.RowIndex)
             .DefaultIfEmpty(0)
             .Max() + 1;
+    }
+    
+    private async Task ShowModal(CardDto cardDto)
+    {
+        _selectedCardId = cardDto.Id;
+        await _cardDetailsModalRef.ShowAsync();
+    }
+
+    private async Task HideModal()
+    {
+        await _cardDetailsModalRef.Hide();
     }
 }

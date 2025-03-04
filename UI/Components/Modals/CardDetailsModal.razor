@@ -1,0 +1,98 @@
+@using Blazored.TextEditor
+@using Domain.Dtos.State
+<Modal @ref="ModalRef">
+    <ModalContent Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>Edit card</ModalTitle>
+            <CloseButton/>
+        </ModalHeader>
+
+        <ModalBody>
+            <Row Class="mb-3">
+                <Column>
+                    <Select @bind-SelectedValue="@State.Status">
+                        <SelectItem Value="Status.Pending">
+                            Pending
+                        </SelectItem>
+                        
+                        <SelectItem Value="Status.InProgress">
+                            InProgress
+                        </SelectItem>
+                        
+                        <SelectItem Value="Status.Done">
+                            Done
+                        </SelectItem>
+                    </Select>
+                </Column>
+
+                <Column>
+                    <Select @bind-SelectedValue="@State.Priority">
+                        <SelectItem Value="Priority.Low">
+                            Low
+                        </SelectItem>
+                        
+                        <SelectItem Value="Priority.Medium">
+                            Medium
+                        </SelectItem>
+                        
+                        <SelectItem Value="Priority.High">
+                            High
+                        </SelectItem>
+                    </Select>
+                </Column>
+            </Row>
+
+            <BlazoredTextEditor @ref="QuillHtml">
+                <ToolbarContent>
+                    <select class="ql-header">
+                        <option selected=""></option>
+                        <option value="1"></option>
+                        <option value="2"></option>
+                        <option value="3"></option>
+                        <option value="4"></option>
+                        <option value="5"></option>
+                    </select>
+
+                    <Span class="ql-formats">
+                        <Button Class="ql-bold"></Button>
+                        <Button Class="ql-italic"></Button>
+                        <Button Class="ql-underline"></Button>
+                        <Button Class="ql-strike"></Button>
+                    </Span>
+
+                    <Span Class="ql-formats">
+                        <Button Class="ql-align" value=""></Button> 
+                        <Button Class="ql-align" value="center"></Button>
+                        <Button Class="ql-align" value="right"></Button>
+                        <Button Class="ql-align" value="justify"></Button>
+                    </Span>
+
+                    <Span Class="ql-formats">
+                        <select class="ql-color"></select>
+                        <select class="ql-background"></select>
+                    </Span>
+
+                    <Span class="ql-formats">
+                        <Button class="ql-list" value="ordered"></Button>
+                        <Button Class="ql-list" value="bullet"></Button>
+                    </Span>
+
+                    <Span Class="ql-formats">
+                        <Button class="ql-link"></Button>
+                    </Span>
+                </ToolbarContent>
+            </BlazoredTextEditor>
+
+        </ModalBody>
+
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="OnCancelAsync">
+                Close
+            </Button>
+            
+            <Button Color="Color.Primary" Clicked="UpdateStateAsync">
+                Save changes
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
