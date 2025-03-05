@@ -52,7 +52,7 @@ public partial class Projects : ComponentBase
         try
         {
             _newProject.UserId = await AuthStateProvider.GetUserIdAsync();
-            _newProject.RoleId = Guid.Parse("FBC6423E-F36B-1410-8ED2-0074E3FF4145");
+            _newProject.RoleId = Guid.Parse("18C7423E-F36B-1410-8ED2-0074E3FF4145");
 
             await ProjectService.CreateAsync(_newProject);
             await LoadProjects();
