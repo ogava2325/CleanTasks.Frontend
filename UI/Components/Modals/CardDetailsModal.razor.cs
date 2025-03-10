@@ -43,12 +43,34 @@ public partial class CardDetailsModal : ComponentBase
 
     public async Task ShowAsync()
     {
+        ClearState();
+        
         await ModalRef.Show();
 
         await LoadStateAsync();
         await LoadCommentsAsync();
 
         await QuillHtml.LoadHTMLContent(State.Description);
+    }
+    
+    private void ClearState()
+    {
+        State = new StateDto
+        {
+            Id = Guid.Empty,
+            CardId = CardId,
+            Description = string.Empty,
+            Priority = Priority.Low,
+            Status = Status.Pending
+        };
+
+        Comments.Clear();
+        _isAddingComment = false;
+
+        QuillHtml?.LoadHTMLContent(string.Empty);
+        NewCommentEditor?.LoadHTMLContent(string.Empty);
+
+        StateHasChanged();
     }
 
     private async Task LoadCommentsAsync()
@@ -64,8 +86,6 @@ public partial class CardDetailsModal : ComponentBase
                 var user = await UserService.GetById(comment.UserId);
                 comment.CreatedBy = $"{user.FirstName} {user.LastName}";
             }
-            
-            StateHasChanged();
         }
         catch (Exception exception)
         {
@@ -78,7 +98,6 @@ public partial class CardDetailsModal : ComponentBase
         try
         {
             State = await StateService.GetByCardIdAsync(CardId);
-            StateHasChanged();
         }
         catch (Exception exception)
         {
