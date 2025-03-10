@@ -1,0 +1,19 @@
+<Modal @bind-Visible="IsVisible" >
+    <ModalContent Size="@ModalSize" Centered>
+        <ModalHeader>
+            <ModalTitle>@Title</ModalTitle>
+            <CloseButton Clicked="Cancel" />
+        </ModalHeader>
+        <ModalBody>
+            <Paragraph>@Message</Paragraph>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="Cancel">
+                @CancelText
+            </Button>
+            <Button Color="Color.Danger" Clicked="Confirm">
+                @ConfirmText
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

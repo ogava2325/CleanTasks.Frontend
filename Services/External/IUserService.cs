@@ -10,4 +10,7 @@ public interface IUserService
     
     [Post("/api/users/register")]
     Task<string> RegisterAsync(RegisterUserDto userDto);
+    
+    [Get("/api/users/{userId}")]
+    Task<UserDto> GetById(Guid userId);
 }

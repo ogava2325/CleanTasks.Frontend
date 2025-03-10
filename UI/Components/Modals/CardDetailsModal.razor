@@ -14,11 +14,11 @@
                         <SelectItem Value="Status.Pending">
                             Pending
                         </SelectItem>
-                        
+
                         <SelectItem Value="Status.InProgress">
                             InProgress
                         </SelectItem>
-                        
+
                         <SelectItem Value="Status.Done">
                             Done
                         </SelectItem>
@@ -30,11 +30,11 @@
                         <SelectItem Value="Priority.Low">
                             Low
                         </SelectItem>
-                        
+
                         <SelectItem Value="Priority.Medium">
                             Medium
                         </SelectItem>
-                        
+
                         <SelectItem Value="Priority.High">
                             High
                         </SelectItem>
@@ -61,7 +61,7 @@
                     </Span>
 
                     <Span Class="ql-formats">
-                        <Button Class="ql-align" value=""></Button> 
+                        <Button Class="ql-align" value=""></Button>
                         <Button Class="ql-align" value="center"></Button>
                         <Button Class="ql-align" value="right"></Button>
                         <Button Class="ql-align" value="justify"></Button>
@@ -83,13 +83,99 @@
                 </ToolbarContent>
             </BlazoredTextEditor>
 
+            <hr/>
+            <Heading Size="HeadingSize.Is4">Activities</Heading>
+
+            @foreach (var comment in Comments)
+            {
+                <Div Margin="Margin.Is3.FromTop">
+                    <Div TextSize="TextSize.Small" TextColor="TextColor.Black50">
+                        @comment.CreatedBy &middot; @FormatSting(comment.CreatedAtUtc)
+                    </Div>
+                    <Div Padding="Padding.Is1"
+                         Margin="Margin.Is0"
+                         Border="Border.OnBottom.Is2.Rounded">
+                        @((MarkupString)comment.Content)
+                    </Div>
+                    <Button Color="Color.Light" Size="Size.ExtraSmall">
+                        Edit
+                    </Button>
+                    <Button Color="Color.Danger" Size="Size.ExtraSmall"
+                            Clicked="@(() => OnDeleteClicked(comment.Id))">
+                        Delete
+                    </Button>
+                </Div>
+            }
+
+            @if (_isAddingComment)
+            {
+                <Div Margin="Margin.Is2.FromTop" Border="Border.Rounded">
+                    <BlazoredTextEditor @ref="NewCommentEditor">
+                        <ToolbarContent>
+                            <select class="ql-header">
+                                <option selected=""></option>
+                                <option value="1"></option>
+                                <option value="2"></option>
+                                <option value="3"></option>
+                                <option value="4"></option>
+                                <option value="5"></option>
+                            </select>
+                            <Span Class="ql-formats">
+                                <Button Class="ql-bold"></Button>
+                                <Button Class="ql-italic"></Button>
+                                <Button Class="ql-underline"></Button>
+                                <Button Class="ql-strike"></Button>
+                            </Span>
+                            <Span Class="ql-formats">
+                                <Button Class="ql-align" value=""></Button>
+                                <Button Class="ql-align" value="center"></Button>
+                                <Button Class="ql-align" value="right"></Button>
+                                <Button Class="ql-align" value="justify"></Button>
+                            </Span>
+                            <Span Class="ql-formats">
+                                <select class="ql-color"></select>
+                                <select class="ql-background"></select>
+                            </Span>
+                            <Span Class="ql-formats">
+                                <Button class="ql-list" value="ordered"></Button>
+                                <Button Class="ql-list" value="bullet"></Button>
+                            </Span>
+                            <Span Class="ql-formats">
+                                <Button class="ql-link"></Button>
+                            </Span>
+                        </ToolbarContent>
+                    </BlazoredTextEditor>
+                </Div>
+
+                <Button Color="Color.Secondary"
+                        Margin="Margin.Is2.FromTop"
+                        Clicked="@CreateCommentAsync">
+                    Save Comment
+                </Button>
+            }
+            else
+            {
+                <Div Margin="Margin.Is2.FromTop" Border="Border.Is1.Rounded"
+                     Padding="Padding.Is2" Background="Background.Light"
+                     TextColor="TextColor.Secondary" Style="cursor:pointer"
+                     onclick="@StartAddingComment">
+                    Add your comment...
+                </Div>
+            }
+            
+            <CommentDeleteConfirmationModal @ref="_deleteConfirmationModal"
+                                            Title="Delete Comment"
+                                            Message="Are you sure you want to delete this comment?"
+                                            ConfirmText="Delete"
+                                            CancelText="Cancel"
+                                            OnConfirmed="@ConfirmDeleteCommentAsync" />
         </ModalBody>
 
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="OnCancelAsync">
                 Close
             </Button>
-            
+
             <Button Color="Color.Primary" Clicked="UpdateStateAsync">
                 Save changes
             </Button>
