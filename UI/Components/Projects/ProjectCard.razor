@@ -3,8 +3,8 @@
 
 <Card Height="Height.Is100"
       Style="background-image: url('images/defatult_background.jpg'); 
-          color: white;" @onclick="() => NavigateToKanban(Project.Id)">
-    <CardBody>
+          color: white;">
+    <CardBody @onclick="() => NavigateToKanban(Project.Id)">
         <CardTitle Size="4">
             @Project.Title
         </CardTitle>
@@ -13,6 +13,7 @@
         Size="Size.Small"
         Style="position: absolute; bottom: 5px; right: 5px;"
         Clicked="ShowDeleteConfirmation">
+
         <Icon Name="IconName.Delete" TextColor="TextColor.White50"></Icon>
     </Button>
 
@@ -47,4 +48,5 @@
     {
         NavigationManager.NavigateTo($"/Kanban/{projectId}");
     }
+
 }
