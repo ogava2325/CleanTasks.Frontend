@@ -80,12 +80,6 @@ public partial class CardDetailsModal : ComponentBase
             var token = await AuthStateProvider.GetToken();
             Comments = (await CommentService.GetByCardIdAsync(CardId, $"Bearer {token}"))
                 .ToList();
-
-            foreach (var comment in Comments)
-            {
-                var user = await UserService.GetById(comment.UserId);
-                comment.CreatedBy = $"{user.FirstName} {user.LastName}";
-            }
         }
         catch (Exception exception)
         {
