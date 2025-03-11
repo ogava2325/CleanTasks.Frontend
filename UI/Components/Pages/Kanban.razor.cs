@@ -5,6 +5,7 @@ using Domain.Dtos.State;
 using Microsoft.AspNetCore.Components;
 using Services.External;
 using UI.Components.Modals;
+using UI.Services;
 
 namespace UI.Components.Pages;
 
@@ -13,6 +14,7 @@ public partial class Kanban : ComponentBase
     [Inject] private ICardService CardService { get; set; }
     [Inject] private IStateService StateService { get; set; }
     [Inject] private IColumnService ColumnService { get; set; }
+    [Inject] public CustomAuthStateProvider AuthStateProvider { get; set; }
     [Parameter] public Guid ProjectId { get; set; }
 
     private List<CardDto> _cards = [];
@@ -27,6 +29,11 @@ public partial class Kanban : ComponentBase
     private Guid _selectedCardId;
     
     private CardDetailsModal _cardDetailsModalRef;
+    
+    private CommentDeleteConfirmationModal _deleteConfirmationModal;
+    private Guid columnToDeleteId;
+
+    private bool _showDeleteColumnError;
     
     protected override async Task OnInitializedAsync()
     {
@@ -216,5 +223,27 @@ public partial class Kanban : ComponentBase
     private async Task HideModal()
     {
         await _cardDetailsModalRef.Hide();
+    }
+
+    private void OnDeleteClicked(Guid columnId)
+    {
+        columnToDeleteId = columnId;
+        _deleteConfirmationModal.Show();
+    }
+    private async Task ConfirmDeleteCommentAsync()
+    {
+        var columnsHasCards = _cards.Any(c => c.ColumnId == columnToDeleteId);
+
+        if (columnsHasCards)
+        {
+            _showDeleteColumnError = true;
+            return;
+        }
+        
+        var token = await AuthStateProvider.GetToken();
+        await ColumnService.DeleteAsync(columnToDeleteId, $"Bearer {token}");
+        
+        await LoadColumnsAsync();
+        _showDeleteColumnError = false;
     }
 }
