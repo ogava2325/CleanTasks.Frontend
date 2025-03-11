@@ -46,6 +46,9 @@ builder.Services.AddRefitClient<ICardService>()
 builder.Services.AddRefitClient<IStateService>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
 
+builder.Services.AddRefitClient<ICommentService>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
