@@ -28,7 +28,7 @@ public partial class Login : ComponentBase
                     Password = _loginModel.Password
                 });
             
-                await AuthStateProvider.Login(token);
+                await AuthStateProvider.Login(token, _loginModel.RememberMe);
                 NavigationManager.NavigateTo("/");
             }
             catch (Exception ex)

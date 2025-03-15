@@ -32,8 +32,8 @@
                             </FieldBody>
                         </Field>
                         <Field Flex="Flex.Wrap.JustifyContent.Between">
-                            <Check TValue="bool">
-                                Remember me
+                            <Check TValue="bool" @bind-Checked="@_loginModel.RememberMe">
+                                Remember me 
                             </Check>
                             <Anchor To="#" TextColor="TextColor.Primary">
                                 Forgot your password?
