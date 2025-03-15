@@ -26,9 +26,22 @@
                 box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);"
                  Margin="Margin.Is0" Border="Border.Rounded">
 
-                <Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom.Is1.FromStart">
-                    @column.Title
-                </Heading>
+                <Row  Class="d-flex justify-content-between align-items-center">
+                    <Column>
+                        <Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom.Is1.FromStart">
+                            @column.Title
+                        </Heading>
+                    </Column>
+                    <Column Class="col-auto">
+                        <Button
+                            Size="Size.Small"
+                            Clicked="@(() => OnDeleteClicked(column.Id))">
+
+                            <Icon Name="IconName.Delete" TextColor="TextColor.Dark"></Icon>
+                        </Button>
+                    </Column>
+                </Row>
+                
 
                 <DropZone TItem="CardDto" Name="@column.Id.ToString()"
                           AllowReorder
@@ -79,6 +92,13 @@
                 }
             </Div>
         }
+
+        <CommentDeleteConfirmationModal @ref="_deleteConfirmationModal"
+                                        Title="Delete Comment"
+                                        Message="Are you sure you want to delete this comment?"
+                                        ConfirmText="Delete"
+                                        CancelText="Cancel"
+                                        OnConfirmed="@ConfirmDeleteCommentAsync" />
 
         <Div Style="
             background: #f4f5f7; 
@@ -140,3 +160,10 @@
         </Card>
     </ItemTemplate>
 </DropContainer>
+
+<Alert Color="Color.Danger" Visible="@_showDeleteColumnError">
+    <AlertDescription>
+        Cannot delete this column because it still has cards.
+    </AlertDescription>
+    <CloseButton Clicked="@(() => _showDeleteColumnError = false)"/>
+</Alert>
