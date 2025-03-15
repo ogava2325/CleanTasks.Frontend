@@ -49,6 +49,9 @@ builder.Services.AddRefitClient<IStateService>()
 builder.Services.AddRefitClient<ICommentService>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
 
+builder.Services.AddRefitClient<IStatsService>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -58,8 +61,6 @@ builder.Services
     .AddBootstrap5Providers()
     .AddFontAwesomeIcons()
     .AddBlazoriseFluentValidation();
-
-
 
 builder.Services.AddValidatorsFromAssembly(typeof(App).Assembly);
 
