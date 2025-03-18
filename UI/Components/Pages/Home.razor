@@ -1,34 +1,93 @@
 @page "/"
-@attribute [Authorize]
-@using UI.Services
-
-@inject CustomAuthStateProvider AuthStateProvider;
-
-<PageTitle>Home</PageTitle>
-<h1>Hello, world!</h1>
 
 <AuthorizeView>
-    <p>Auth</p>
+    <Authorized>
+        <Div class="p-4">
+            <Heading>Welcome to Clean Tasks</Heading>
+            <Paragraph>
+                A Trello-like application for organizing your tasks, projects, and team collaboration.
+            </Paragraph>
+
+            <Row Class="mt-4">
+                <Column Class="col-sm-4 mb-3">
+                    <Card Background="Background.Light" TextColor="TextColor.Dark" Class="h-100">
+                        <CardHeader>
+                            <Strong>Projects</Strong>
+                        </CardHeader>
+                        <CardBody>
+                            <Heading Size="HeadingSize.Is2">@ProjectsCountText</Heading>
+                            <p>Total @ProjectPlural</p>
+                        </CardBody>
+                        <CardFooter>
+                            <Button Color="Color.Primary" Clicked="@(() => NavigationManager.NavigateTo("/projects"))">
+                                <Icon Name="IconName.List"/>
+                                <Span class="ms-2">View All</Span>
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </Column>
+
+                <Column Class="col-sm-4 mb-3">
+                    <Card Background="Background.Light" TextColor="TextColor.Dark" Class="h-100">
+                        <CardHeader>
+                            <Strong>Cards</Strong>
+                        </CardHeader>
+                        <CardBody>
+                            <Heading Size="HeadingSize.Is2">@CardsCountText</Heading>
+                            <Paragraph>Open @TaskPlural</Paragraph>
+                        </CardBody>
+                    </Card>
+                </Column>
+
+                <Column Class="col-sm-4 mb-3">
+                    <Card Background="Background.Light" TextColor="TextColor.Dark" Class="h-100">
+                        <CardHeader>
+                            <Strong>Users</Strong>
+                        </CardHeader>
+                        <CardBody>
+                            <Heading Size="HeadingSize.Is2">@UsersCountText</Heading>
+                            <Paragraph>@UserPlural</Paragraph>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+
+            <Row Class="mt-5">
+                <Column Class="col-12 mb-3">
+                    <Heading Size="HeadingSize.Is4">Latest News</Heading>
+                </Column>
+            </Row>
+
+            <LoadingIndicator @bind-Visible="@_isNewsLoading">
+                <Row Class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach (var article in Articles)
+                    {
+                        <Column Class="col">
+                            <Card Background="Background.Light" TextColor="TextColor.Dark" Class="h-100">
+                                @if (!string.IsNullOrWhiteSpace(article.UrlToImage))
+                                {
+                                    <Image Source="@article.UrlToImage" Text="@article.Title" Class="img-fluid" Style="max-height: 250px"/>
+                                }
+                                <CardBody>
+                                    <CardTitle>@article.Title</CardTitle>
+                                    <Paragraph>
+                                        @article.Description
+                                    </Paragraph>
+                                </CardBody>
+                                <CardFooter>
+                                    <Button Color="Color.Primary"
+                                            Clicked="@(() => OpenArticle(article.Url))">
+                                        Read More
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </Column>
+                    }
+                </Row>
+            </LoadingIndicator>
+        </Div>
+    </Authorized>
+    <NotAuthorized>
+        @RedirectToLogin()
+    </NotAuthorized>
 </AuthorizeView>
-
-Welcome to your new app.
-<Button @onclick="HandlerValidSumbit">
-    Log out
-</Button>
-
-@code
-{
-    private async void HandlerValidSumbit()
-    {
-        try
-        {
-            await AuthStateProvider.Logout();
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-    }
-
-}
