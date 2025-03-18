@@ -7,7 +7,10 @@ using Services.Auth;
 
 namespace UI.Services;
 
-public class CustomAuthStateProvider(NavigationManager navigation, ProtectedSessionStorage sessionStorage)
+public class CustomAuthStateProvider(
+    NavigationManager navigation, 
+    ProtectedLocalStorage localStorage,
+    ProtectedSessionStorage sessionStorage)
     : AuthenticationStateProvider
 {
     private ClaimsPrincipal _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
@@ -16,22 +19,38 @@ public class CustomAuthStateProvider(NavigationManager navigation, ProtectedSess
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var sessionResult = await sessionStorage.GetAsync<string>(TokenKey);
-
-        if (!sessionResult.Success || string.IsNullOrEmpty(sessionResult.Value))
+        // First check local storage (for "remember me")
+        var localResult = await localStorage.GetAsync<string>(TokenKey);
+        if (localResult.Success && !string.IsNullOrEmpty(localResult.Value))
         {
+            var identity = new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(localResult.Value), "jwt");
+            _currentUser = new ClaimsPrincipal(identity);
             return new AuthenticationState(_currentUser);
         }
-
-        var identity = new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(sessionResult.Value), "jwt");
-        _currentUser = new ClaimsPrincipal(identity);
-
+        
+        // Then check session storage
+        var sessionResult = await sessionStorage.GetAsync<string>(TokenKey);
+        if (sessionResult.Success && !string.IsNullOrEmpty(sessionResult.Value))
+        {
+            var identity = new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(sessionResult.Value), "jwt");
+            _currentUser = new ClaimsPrincipal(identity);
+            return new AuthenticationState(_currentUser);
+        }
+        
         return new AuthenticationState(_currentUser);
     }
 
-    public async Task Login(string token)
+    public async Task Login(string token, bool rememberMe)
     {
-        await sessionStorage.SetAsync(TokenKey, token);
+        if (rememberMe)
+        {
+            await localStorage.SetAsync(TokenKey, token);
+        }
+        else
+        {
+            await sessionStorage.SetAsync(TokenKey, token);
+        }
+        
         var identity = new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(token), "jwt");
         _currentUser = new ClaimsPrincipal(identity);
 
@@ -41,6 +60,7 @@ public class CustomAuthStateProvider(NavigationManager navigation, ProtectedSess
     public async Task Logout()
     {
         await sessionStorage.DeleteAsync(TokenKey);
+        await localStorage.DeleteAsync(TokenKey);
         _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
 
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
@@ -49,6 +69,12 @@ public class CustomAuthStateProvider(NavigationManager navigation, ProtectedSess
 
     public async Task<string> GetToken()
     {
+        var localResult = await localStorage.GetAsync<string>(TokenKey);
+        if (localResult.Success && !string.IsNullOrEmpty(localResult.Value))
+        {
+            return localResult.Value;
+        }
+        
         var sessionResult = await sessionStorage.GetAsync<string>(TokenKey);
 
         if (!sessionResult.Success || string.IsNullOrEmpty(sessionResult.Value))
@@ -61,14 +87,9 @@ public class CustomAuthStateProvider(NavigationManager navigation, ProtectedSess
 
     public async Task<Guid> GetUserIdAsync()
     {
-        var sessionResult = await sessionStorage.GetAsync<string>(TokenKey);
+        var token = await GetToken();
 
-        if (!sessionResult.Success || string.IsNullOrEmpty(sessionResult.Value))
-        {
-            return Guid.Empty;
-        }
-
-        var claims = JwtParser.ParseClaimsFromJwt(sessionResult.Value);
+        var claims = JwtParser.ParseClaimsFromJwt(token);
         var userIdString = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         return Guid.TryParse(userIdString, out var userId) ? userId : Guid.Empty;
