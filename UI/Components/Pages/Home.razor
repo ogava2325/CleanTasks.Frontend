@@ -1,34 +1,27 @@
 @page "/"
-@attribute [Authorize]
 @using UI.Services
 
-@inject CustomAuthStateProvider AuthStateProvider;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Home</PageTitle>
 <h1>Hello, world!</h1>
 
 <AuthorizeView>
-    <p>Auth</p>
+    <Authorized>
+        <p>Auth</p>
+    </Authorized>
+    <NotAuthorized>
+        @RedirectToLogin()
+    </NotAuthorized>
 </AuthorizeView>
 
-Welcome to your new app.
-<Button @onclick="HandlerValidSumbit">
-    Log out
-</Button>
 
 @code
 {
-    private async void HandlerValidSumbit()
+    private MarkupString RedirectToLogin()
     {
-        try
-        {
-            await AuthStateProvider.Logout();
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-    }
+        NavigationManager.NavigateTo("login", forceLoad: true);
 
+        return (MarkupString)"<p>Redirecting to login...</p>";
+    }
 }

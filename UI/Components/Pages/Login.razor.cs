@@ -1,6 +1,8 @@
+using System.Net;
 using Blazorise;
 using Domain.Dtos.User;
 using Microsoft.AspNetCore.Components;
+using Refit;
 using Services.External;
 using UI.Services;
 
@@ -15,6 +17,8 @@ public partial class Login : ComponentBase
     private Validations _fluentValidation;
 
     readonly LoginUserDto _loginModel = new();
+
+    private ErrorResponse? _errorResponse = new();
     
     private async Task OnLogin()
     {
@@ -27,14 +31,23 @@ public partial class Login : ComponentBase
                     Email = _loginModel.Email,
                     Password = _loginModel.Password
                 });
-            
+
                 await AuthStateProvider.Login(token, _loginModel.RememberMe);
                 NavigationManager.NavigateTo("/");
             }
-            catch (Exception ex)
+            catch (ApiException apiEx)
             {
-                Console.WriteLine($"Login error: {ex.Message}");
+                _errorResponse = await apiEx.GetContentAsAsync<ErrorResponse>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An error occured during login {e.Message}");
             }
         }
     }
+}
+
+public class ErrorResponse
+{
+    public string message { get; set; } = string.Empty;
 }
