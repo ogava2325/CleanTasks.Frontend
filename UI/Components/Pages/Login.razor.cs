@@ -1,9 +1,6 @@
-using System.Net;
-using Blazorise;
 using Domain.Dtos.User;
 using Microsoft.AspNetCore.Components;
-using Refit;
-using Services.External;
+using services.External;
 using UI.Services;
 
 namespace UI.Components.Pages;

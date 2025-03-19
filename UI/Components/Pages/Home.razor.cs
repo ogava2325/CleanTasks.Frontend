@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using NewsAPI;
 using NewsAPI.Constants;
 using NewsAPI.Models;
-using Services.External;
+using services.External;
 
 namespace UI.Components.Pages;
 

@@ -1,6 +1,6 @@
 using Domain.Dtos.Project;
 using Microsoft.AspNetCore.Components;
-using Services.External;
+using services.External;
 using UI.Components.Modals;
 using UI.Services;
 

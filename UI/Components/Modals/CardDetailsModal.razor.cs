@@ -2,7 +2,7 @@ using Blazored.TextEditor;
 using Domain.Dtos.Comment;
 using Domain.Dtos.State;
 using Microsoft.AspNetCore.Components;
-using Services.External;
+using services.External;
 using UI.Services;
 using Modal = Blazorise.Modal;
 
