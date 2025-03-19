@@ -10,7 +10,13 @@
 
         <Card Shadow="Shadow.Default">
             <CardBody>
-                <Validations @ref="fluentValidation" Mode="ValidationMode.Manual" Model="registerModel" HandlerType="typeof(FluentValidationHandler)">
+                @if (!string.IsNullOrWhiteSpace(_errorResponse))
+                {
+                    <Alert Color="Color.Danger" Visible Margin="Margin.Is1.FromTop">
+                        @_errorResponse
+                    </Alert>
+                }
+                <Validations Mode="ValidationMode.Auto" Model="_registerModel" HandlerType="typeof(FluentValidationHandler)">
                     <Form>
                         <Field>
                             <FieldLabel>
@@ -18,7 +24,11 @@
                             </FieldLabel>
                             <FieldBody>
                                 <Validation>
-                                    <TextEdit Placeholder="John" @bind-Text="registerModel.FirstName"/>
+                                    <TextEdit Placeholder="John" @bind-Text="_registerModel.FirstName">
+                                        <Feedback>
+                                            <ValidationError/>
+                                        </Feedback>
+                                    </TextEdit>
                                 </Validation>
                             </FieldBody>
                         </Field>
@@ -28,7 +38,11 @@
                             </FieldLabel>
                             <FieldBody>
                                 <Validation>
-                                    <TextEdit Placeholder="Doe" @bind-Text="registerModel.LastName"/>
+                                    <TextEdit Placeholder="Doe" @bind-Text="_registerModel.LastName">
+                                        <Feedback>
+                                            <ValidationError/>
+                                        </Feedback>
+                                    </TextEdit>
                                 </Validation>
                             </FieldBody>
                         </Field>
@@ -38,7 +52,11 @@
                             </FieldLabel>
                             <FieldBody>
                                 <Validation>
-                                    <TextEdit Placeholder="name@blazorise.com" Role="TextRole.Email" @bind-Text="registerModel.Email"/>
+                                    <TextEdit Placeholder="name@blazorise.com" Role="TextRole.Email" @bind-Text="_registerModel.Email">
+                                        <Feedback>
+                                            <ValidationError/>
+                                        </Feedback>
+                                    </TextEdit>
                                 </Validation>
                             </FieldBody>
                         </Field>
@@ -48,7 +66,11 @@
                             </FieldLabel>
                             <FieldBody>
                                 <Validation>
-                                    <TextEdit Placeholder="********" Role="TextRole.Password" autocomplete="new-password" @bind-Text="registerModel.Password"/>
+                                    <TextEdit Placeholder="********" Role="TextRole.Password" autocomplete="new-password" @bind-Text="_registerModel.Password">
+                                        <Feedback>
+                                            <ValidationError/>
+                                        </Feedback>
+                                    </TextEdit>
                                 </Validation>
                             </FieldBody>
                         </Field>
@@ -58,7 +80,11 @@
                             </FieldLabel>
                             <FieldBody>
                                 <Validation>
-                                    <TextEdit Placeholder="********" Role="TextRole.Password" autocomplete="new-password" @bind-Text="registerModel.ConfirmPassword"/>
+                                    <TextEdit Placeholder="********" Role="TextRole.Password" autocomplete="new-password" @bind-Text="_registerModel.ConfirmPassword">
+                                        <Feedback>
+                                            <ValidationError/>
+                                        </Feedback>
+                                    </TextEdit>
                                 </Validation>
                             </FieldBody>
                         </Field>
