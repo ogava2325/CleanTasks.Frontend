@@ -1,4 +1,7 @@
 @page "/"
+@using UI.Services
+
+@inject NavigationManager NavigationManager;
 
 <AuthorizeView>
     <Authorized>
@@ -26,8 +29,7 @@
                         </CardFooter>
                     </Card>
                 </Column>
-
-                <Column Class="col-sm-4 mb-3">
+              <Column Class="col-sm-4 mb-3">
                     <Card Background="Background.Light" TextColor="TextColor.Dark" Class="h-100">
                         <CardHeader>
                             <Strong>Cards</Strong>
@@ -86,8 +88,17 @@
                 </Row>
             </LoadingIndicator>
         </Div>
-    </Authorized>
     <NotAuthorized>
         @RedirectToLogin()
     </NotAuthorized>
 </AuthorizeView>
+
+@code
+{
+    private MarkupString RedirectToLogin()
+    {
+        NavigationManager.NavigateTo("login", forceLoad: true);
+
+        return (MarkupString)"<p>Redirecting to login...</p>";
+    }
+}

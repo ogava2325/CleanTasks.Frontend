@@ -9,6 +9,13 @@
         </Heading>
         <Card Shadow="Shadow.Default">
             <CardBody>
+                @if (!string.IsNullOrWhiteSpace(_errorResponse.message))
+                {
+                    <Alert Color="Color.Danger" Visible Margin="Margin.Is1.FromTop">
+                        @_errorResponse.message
+                    </Alert>
+                }
+
                 <Validations @ref="_fluentValidation" Mode="ValidationMode.Manual" Model="_loginModel" HandlerType="typeof(FluentValidationHandler)">
                     <Form>
                         <Field>
@@ -33,7 +40,7 @@
                         </Field>
                         <Field Flex="Flex.Wrap.JustifyContent.Between">
                             <Check TValue="bool" @bind-Checked="@_loginModel.RememberMe">
-                                Remember me 
+                                Remember me
                             </Check>
                             <Anchor To="#" TextColor="TextColor.Primary">
                                 Forgot your password?
