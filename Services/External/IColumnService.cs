@@ -10,4 +10,7 @@ public interface IColumnService
     
     [Post("/api/columns")]
     Task<ColumnDto> CreateAsync([Body] CreateColumnDto command);
+    
+    [Delete("/api/columns/{id}")]
+    Task DeleteAsync(Guid id, [Header("Authorization")] string authorization);
 }
