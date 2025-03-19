@@ -9,14 +9,14 @@
         </Heading>
         <Card Shadow="Shadow.Default">
             <CardBody>
-                @if (!string.IsNullOrWhiteSpace(_errorResponse.message))
+                @if (!string.IsNullOrWhiteSpace(_errorResponse))
                 {
                     <Alert Color="Color.Danger" Visible Margin="Margin.Is1.FromTop">
-                        @_errorResponse.message
+                        @_errorResponse
                     </Alert>
                 }
 
-                <Validations @ref="_fluentValidation" Mode="ValidationMode.Manual" Model="_loginModel" HandlerType="typeof(FluentValidationHandler)">
+                <Validations Mode="ValidationMode.Auto" Model="@_loginModel" HandlerType="typeof(FluentValidationHandler)">
                     <Form>
                         <Field>
                             <FieldLabel>
@@ -24,7 +24,11 @@
                             </FieldLabel>
                             <FieldBody>
                                 <Validation>
-                                    <TextEdit Placeholder="name@blazorise.com" Role="TextRole.Email" @bind-Text="_loginModel.Email"/>
+                                    <TextEdit Placeholder="name@blazorise.com" Role="TextRole.Email" @bind-Text="_loginModel.Email">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback> 
+                                    </TextEdit>
                                 </Validation>
                             </FieldBody>
                         </Field>
@@ -34,7 +38,11 @@
                             </FieldLabel>
                             <FieldBody>
                                 <Validation>
-                                    <TextEdit Placeholder="********" Role="TextRole.Password" @bind-Text="_loginModel.Password"/>
+                                    <TextEdit Placeholder="********" Role="TextRole.Password" @bind-Text="_loginModel.Password">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
                                 </Validation>
                             </FieldBody>
                         </Field>
