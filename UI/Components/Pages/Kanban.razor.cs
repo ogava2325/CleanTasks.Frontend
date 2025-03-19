@@ -3,7 +3,7 @@ using Domain.Dtos.Card;
 using Domain.Dtos.Column;
 using Domain.Dtos.State;
 using Microsoft.AspNetCore.Components;
-using Services.External;
+using services.External;
 using UI.Components.Modals;
 using UI.Services;
 

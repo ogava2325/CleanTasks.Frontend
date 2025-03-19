@@ -2,8 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Services;
-using Services.Auth;
+using services.Auth;
 
 namespace UI.Services;
 

@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Blazorise;
 using Blazorise.Bootstrap5;
 using Blazorise.FluentValidation;
@@ -8,9 +6,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Refit;
+using services.Extensions;
 using UI.Components;
-using Services.External;
 using UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,31 +24,7 @@ builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
 builder.Services.AddScoped<CustomAuthStateProvider>();
 
 // Services for Refit
-var baseUrl = builder.Configuration.GetSection("BaseUrl").Value;
-
-builder.Services.AddRefitClient<IUserService>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-
-builder.Services.AddRefitClient<IRoleService>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-
-builder.Services.AddRefitClient<IProjectService>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-
-builder.Services.AddRefitClient<IColumnService>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-
-builder.Services.AddRefitClient<ICardService>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-
-builder.Services.AddRefitClient<IStateService>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-
-builder.Services.AddRefitClient<ICommentService>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-
-builder.Services.AddRefitClient<IStatsService>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
+builder.Services.AddRefitServices(builder.Configuration);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
