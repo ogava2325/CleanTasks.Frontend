@@ -12,32 +12,34 @@ public partial class Register : ComponentBase
     [Inject] private NavigationManager NavigationManager { get; set; }
     [Inject] private IUserService UserService { get; set; }
 
-    private readonly RegisterUserDto registerModel = new();
-
-    Validations fluentValidation;
+    private readonly RegisterUserDto _registerModel = new();
+    
+    private string? _errorResponse;
 
     private async void OnRegister()
     {
-        if (await fluentValidation.ValidateAll())
+        try
         {
-            try
+            var response = await UserService.RegisterAsync(new RegisterUserDto()
             {
-                var user = new RegisterUserDto()
-                {
-                    FirstName = registerModel.FirstName,
-                    LastName = registerModel.LastName,
-                    Email = registerModel.Email,
-                    Password = registerModel.Password,
-                };
+                FirstName = _registerModel.FirstName,
+                LastName = _registerModel.LastName,
+                Email = _registerModel.Email,
+                Password = _registerModel.Password,
+            });
 
-                await UserService.RegisterAsync(user);
-
+            if (response.IsSuccess)
+            {
                 NavigationManager.NavigateTo("/login");
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"Register error: {ex.Message}");
+                _errorResponse = response.Error;
             }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occured during registration: {ex.Message}");
         }
     }
 }

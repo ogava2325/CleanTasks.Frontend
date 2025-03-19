@@ -10,7 +10,7 @@ public interface IUserService
     Task<ResultDto<string>> LoginAsync(LoginUserDto userDto);
     
     [Post("/api/users/register")]
-    Task<string> RegisterAsync(RegisterUserDto userDto);
+    Task<ResultDto<string>> RegisterAsync(RegisterUserDto userDto);
     
     [Get("/api/users/{userId}")]
     Task<UserDto> GetById(Guid userId);
