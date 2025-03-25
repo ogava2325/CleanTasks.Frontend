@@ -1,7 +1,7 @@
 using Domain.Dtos.Comment;
 using Refit;
 
-namespace Services.External;
+namespace services.External;
 
 [Headers("Authorization: Bearer")]
 public interface ICommentService

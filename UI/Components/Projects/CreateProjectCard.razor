@@ -1,12 +1,20 @@
-<Card Background="Background.Light" Height="Height.Is100" @onclick="OnClick" Style="cursor: pointer">
-    <CardBody>
-        <CardTitle Size="4">
-            Create new project
-            <Icon Name="IconName.Add"></Icon>
+<Card Class="border border-2 border-dashed text-center p-4"
+      Background="Background.Light"
+      Height="Height.Is100"
+      Style="cursor: pointer"
+      @onclick="OnClick">
+    <CardBody Class="d-flex flex-column align-items-center justify-content-center">
+        <Icon Name="IconName.PlusCircle" Size="IconSize.Is3" Class="mb-2 text-primary" />
+
+        <CardTitle Size="5">
+            Create New Project
         </CardTitle>
+
+        <Paragraph Class="text-muted mb-0">
+            Start a new project from scratch
+        </Paragraph>
     </CardBody>
 </Card>
-
 @code {
     [Parameter, EditorRequired] public EventCallback OnClick { get; set; }
 }

@@ -1,10 +1,10 @@
 @using Domain.Dtos.Project
 @using UI.Components.Modals
 
-<Card Height="Height.Is100"
-      Style="background-image: url('images/defatult_background.jpg'); 
-          color: white;">
-    <CardBody @onclick="() => NavigateToKanban(Project.Id)">
+<Card Class="h-100"
+      Style="background-image: url('images/defatult_background.jpg');
+          color: white; min-height: 180px">
+    <CardBody @onclick="() => NavigateToKanban(Project.Id)" Class="h-1">
         <CardTitle Size="4">
             @Project.Title
         </CardTitle>

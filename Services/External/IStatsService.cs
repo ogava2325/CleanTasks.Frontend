@@ -1,7 +1,7 @@
 using Domain.Dtos.Stats;
 using Refit;
 
-namespace Services.External;
+namespace services.External;
 
 public interface IStatsService
 {
