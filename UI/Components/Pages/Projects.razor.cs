@@ -1,4 +1,5 @@
 using Domain.Dtos.Project;
+using Domain.Dtos.Shared;
 using Microsoft.AspNetCore.Components;
 using services.External;
 using UI.Components.Modals;
@@ -8,26 +9,86 @@ namespace UI.Components.Pages;
 
 public partial class Projects : ComponentBase
 {
-    [Inject] private IProjectService ProjectService { get; set; }
-    [Inject] private CustomAuthStateProvider AuthStateProvider { get; set; }
-    [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private IProjectService ProjectService { get; set; } = default!;
+    [Inject] private CustomAuthStateProvider AuthStateProvider { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
-    private List<ProjectDto> UserProjects { get; set; } = [];
-    private CreateProjectDto _newProject = new();
+    private PaginatedList<ProjectDto>? PaginatedProjectsList { get; set; }
 
-    private CreateProjectModal _projectModalRef;
+    private CreateProjectDto NewProject { get; set; } = new();
+    private CreateProjectModal ProjectModalRef { get; set; } = default!;
+
+    private int PageSize { get; set; } = 11;
+    private int PageNumber { get; set; } = 1;
+
+    private DateTimeOffset? StartDate { get; set; }
+    private DateTimeOffset? EndDate { get; set; }
+
+
+    private ProjectSortOption _selectedSortOption = ProjectSortOption.CreatedDesc;
+
+    private ProjectSortOption SelectedSortOption
+    {
+        get => _selectedSortOption;
+        set
+        {
+            if (_selectedSortOption == value) return;
+            _selectedSortOption = value;
+            _ = LoadProjectsAsync();
+        }
+    }
+
+    private ProjectsSortBy SortBy { get; set; } = ProjectsSortBy.CreatedAtUtc;
+    private ProjectsSortOrder SortOrder { get; set; } = ProjectsSortOrder.Desc;
+
+    private string? _searchTerm;
+
+    private string? SearchTerm
+    {
+        get => _searchTerm;
+        set
+        {
+            if (_searchTerm == value) return;
+            _searchTerm = value;
+            PageNumber = 1;
+            _ = LoadProjectsAsync();
+        }
+    }
+
+    private static readonly Dictionary<ProjectSortOption, (ProjectsSortBy, ProjectsSortOrder)> SortMapping = new()
+    {
+        { ProjectSortOption.NameAsc, (ProjectsSortBy.Title, ProjectsSortOrder.Asc) },
+        { ProjectSortOption.NameDesc, (ProjectsSortBy.Title, ProjectsSortOrder.Desc) },
+        { ProjectSortOption.CreatedAsc, (ProjectsSortBy.CreatedAtUtc, ProjectsSortOrder.Asc) },
+        { ProjectSortOption.CreatedDesc, (ProjectsSortBy.CreatedAtUtc, ProjectsSortOrder.Desc) }
+    };
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadProjects();
+        await LoadProjectsAsync();
     }
 
-    private async Task LoadProjects()
+    private async Task LoadProjectsAsync()
     {
         try
         {
             var userId = await AuthStateProvider.GetUserIdAsync();
-            UserProjects = (await ProjectService.GetByUserId(userId)).ToList();
+            var (sortBy, sortOrder) = SortMapping[SelectedSortOption];
+
+            var adjustedEndDate = EndDate?.Date.AddDays(1).AddSeconds(-1);
+
+            PaginatedProjectsList = await ProjectService.GetByUserId(
+                userId,
+                PageNumber,
+                PageSize,
+                SearchTerm,
+                sortBy,
+                sortOrder,
+                StartDate,
+                adjustedEndDate
+            );
+            
+            StateHasChanged();
         }
         catch (Exception exception)
         {
@@ -35,46 +96,77 @@ public partial class Projects : ComponentBase
         }
     }
 
-    private async Task ShowModal()
+    private async Task ShowCreateProjectModal()
     {
-        _newProject = new CreateProjectDto();
+        NewProject = new CreateProjectDto();
 
-        await _projectModalRef.Show();
+        await ProjectModalRef.Show();
     }
 
-    private async Task HideModal()
+    private async Task HideCreateProjectModal()
     {
-        await _projectModalRef.Hide();
+        await ProjectModalRef.Hide();
     }
 
     private async Task CreateProject()
     {
         try
         {
-            _newProject.UserId = await AuthStateProvider.GetUserIdAsync();
-            _newProject.RoleId = Guid.Parse("18C7423E-F36B-1410-8ED2-0074E3FF4145");
+            NewProject.UserId = await AuthStateProvider.GetUserIdAsync();
+            NewProject.RoleId = Guid.Parse("18C7423E-F36B-1410-8ED2-0074E3FF4145");
 
-            await ProjectService.CreateAsync(_newProject);
-            await LoadProjects();
-            await HideModal();
+            await ProjectService.CreateAsync(NewProject);
+            await LoadProjectsAsync();
+            await HideCreateProjectModal();
         }
         catch (Exception exception)
         {
             Console.WriteLine($"Error creating project: {exception.Message}");
         }
     }
-    
+
     private async Task DeleteProject(Guid projectId)
     {
         try
         {
             await ProjectService.DeleteAsync(projectId);
-            UserProjects.RemoveAll(p => p.Id == projectId);
-            StateHasChanged(); 
+            await LoadProjectsAsync();
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error deleting project: {ex.Message}");
         }
+    }
+
+    private async Task GoToPreviousPage()
+    {
+        if (PaginatedProjectsList?.HasPreviousPage == true)
+        {
+            PageNumber--;
+            await LoadProjectsAsync();
+        }
+    }
+
+    private async Task GoToNextPage()
+    {
+        if (PaginatedProjectsList?.HasNextPage == true)
+        {
+            PageNumber++;
+            await LoadProjectsAsync();
+        }
+    }
+
+    private async Task SetActivePage(string page)
+    {
+        PageNumber = int.Parse(page);
+        await LoadProjectsAsync();
+    }
+
+    private async Task ClearFiltersAsync()
+    {
+        StartDate = null;
+        EndDate = null;
+        await LoadProjectsAsync();
     }
 }

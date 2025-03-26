@@ -2,7 +2,7 @@ using Domain.Dtos.Shared;
 using Domain.Dtos.User;
 using Refit;
 
-namespace Services.External;
+namespace services.External;
 
 public interface IUserService
 {
