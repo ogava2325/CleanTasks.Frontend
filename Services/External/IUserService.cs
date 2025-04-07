@@ -14,4 +14,7 @@ public interface IUserService
     
     [Get("/api/users/{userId}")]
     Task<UserDto> GetById(Guid userId);
+    
+    [Get("/api/users")]
+    Task<IEnumerable<UserDto>> GetAll();
 }

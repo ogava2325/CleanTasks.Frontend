@@ -1,8 +1,11 @@
+using System.Net;
 using Blazorise;
 using Domain.Dtos.Card;
 using Domain.Dtos.Column;
 using Domain.Dtos.State;
+using Domain.Dtos.User;
 using Microsoft.AspNetCore.Components;
+using Refit;
 using services.External;
 using UI.Components.Modals;
 using UI.Services;
@@ -14,33 +17,35 @@ public partial class Kanban : ComponentBase
     [Inject] private ICardService CardService { get; set; }
     [Inject] private IStateService StateService { get; set; }
     [Inject] private IColumnService ColumnService { get; set; }
+    [Inject] private IProjectService ProjectService { get; set; }
     [Inject] public CustomAuthStateProvider AuthStateProvider { get; set; }
+    [Inject] public INotificationService NotificationService { get; set; }
     [Parameter] public Guid ProjectId { get; set; }
 
     private List<CardDto> _cards = [];
     private List<ColumnDto> _columns = [];
-   
+
     private readonly CreateCardDto _newCard = new();
     private readonly CreateColumnDto _newColumn = new();
-    
+
     private bool _isAddingColumn;
-    private Guid? _activeColumnId; 
-    
+    private Guid? _activeColumnId;
+
     private Guid _selectedCardId;
-    
-    private CardDetailsModal _cardDetailsModalRef;
-    
+
+    private CardDetailsModal CardDetailsModalRef { get; set; } = default!;
+    private Offcanvas OffcanvasRef { get; set; } = default!;
+    private InviteUserModal InviteUserModalRef { get; set; } = default!;
+
     private CommentDeleteConfirmationModal _deleteConfirmationModal;
     private Guid columnToDeleteId;
 
-    private bool _showDeleteColumnError;
-    
     protected override async Task OnInitializedAsync()
     {
         await LoadCardsAsync();
         await LoadColumnsAsync();
     }
-    
+
     private async Task LoadCardsAsync()
     {
         try
@@ -80,13 +85,13 @@ public partial class Kanban : ComponentBase
         _activeColumnId = null;
         _newCard.Title = "";
     }
-    
+
     private void StartAddingColumn()
     {
         _isAddingColumn = true;
         _newColumn.Title = "";
     }
-    
+
     private void CancelAddingColumn()
     {
         _isAddingColumn = false;
@@ -115,8 +120,8 @@ public partial class Kanban : ComponentBase
                     Status = Status.Pending,
                     Priority = Priority.Low,
                     Description = string.Empty
-                }; 
-                
+                };
+
                 await StateService.CreateAsync(newState);
             }
             catch (Exception e)
@@ -131,7 +136,7 @@ public partial class Kanban : ComponentBase
 
         CancelAddingCard();
     }
-    
+
     private async Task CreateColumnAsync()
     {
         var newColumnDto = new CreateColumnDto
@@ -171,7 +176,7 @@ public partial class Kanban : ComponentBase
             .ToList();
 
         affectedCards.Insert(card.RowIndex, card);
-        
+
         for (var i = 0; i < affectedCards.Count; i++)
         {
             affectedCards[i].RowIndex = i;
@@ -181,7 +186,7 @@ public partial class Kanban : ComponentBase
             .Where(c => c.ColumnId != newColumnId) // Keep other columns unchanged
             .Concat(affectedCards) // Insert updated column
             .ToList();
-        
+
         var updateTasks = affectedCards.Select(async updatedCard =>
         {
             var updateDto = new UpdateCardDto
@@ -213,16 +218,16 @@ public partial class Kanban : ComponentBase
             .DefaultIfEmpty(0)
             .Max() + 1;
     }
-    
-    private async Task ShowModal(CardDto cardDto)
+
+    private async Task ShowCardDetailsModal(CardDto cardDto)
     {
         _selectedCardId = cardDto.Id;
-        await _cardDetailsModalRef.ShowAsync();
+        await CardDetailsModalRef.ShowAsync();
     }
 
-    private async Task HideModal()
+    private async Task HideCardDetailsModal()
     {
-        await _cardDetailsModalRef.Hide();
+        await CardDetailsModalRef.Hide();
     }
 
     private void OnDeleteClicked(Guid columnId)
@@ -230,20 +235,70 @@ public partial class Kanban : ComponentBase
         columnToDeleteId = columnId;
         _deleteConfirmationModal.Show();
     }
+
+    private async Task OnInviteUserClicked(Guid userId)
+    {
+        var token = await AuthStateProvider.GetToken();
+
+        var addUserCommand = new AddUserToProjectsDto()
+        {
+            ProjectId = ProjectId,
+            UserId = userId
+        };
+
+        try
+        {
+            await ProjectService.AddUserToProjectAsync(ProjectId, addUserCommand, $"Bearer {token}");
+        }
+        catch (ApiException e)
+        {
+            if (e.StatusCode == HttpStatusCode.Forbidden)
+            {
+                await ShowErrorNotification("You don't have permission to add users to this project.");
+            }
+
+            Console.WriteLine($"Error adding user to project: {e.Message}");
+        }
+    }
+
+    private async Task ShowInviteUserModal()
+    {
+        await InviteUserModalRef.Show();
+    }
+
+    private async Task HideInviteUserModal()
+    {
+        await InviteUserModalRef.Hide();
+    }
+
     private async Task ConfirmDeleteCommentAsync()
     {
         var columnsHasCards = _cards.Any(c => c.ColumnId == columnToDeleteId);
 
         if (columnsHasCards)
         {
-            _showDeleteColumnError = true;
+            await ShowErrorNotification("You cannot delete a column that contains cards.");
             return;
         }
-        
+
         var token = await AuthStateProvider.GetToken();
         await ColumnService.DeleteAsync(columnToDeleteId, $"Bearer {token}");
-        
+
         await LoadColumnsAsync();
-        _showDeleteColumnError = false;
+    }
+
+    private Task ShowOffcanvas()
+    {
+        return OffcanvasRef.Show();
+    }
+
+    private Task HideOffcanvas()
+    {
+        return OffcanvasRef.Hide();
+    }
+
+    private Task ShowErrorNotification(string message)
+    {
+        return NotificationService.Error(message);
     }
 }
