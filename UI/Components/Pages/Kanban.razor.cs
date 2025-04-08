@@ -2,11 +2,13 @@ using System.Net;
 using Blazorise;
 using Domain.Dtos.Card;
 using Domain.Dtos.Column;
+using Domain.Dtos.Project;
 using Domain.Dtos.State;
 using Domain.Dtos.User;
 using Microsoft.AspNetCore.Components;
 using Refit;
 using services.External;
+using UI.Components.Kanban;
 using UI.Components.Modals;
 using UI.Services;
 
@@ -34,16 +36,31 @@ public partial class Kanban : ComponentBase
     private Guid _selectedCardId;
 
     private CardDetailsModal CardDetailsModalRef { get; set; } = default!;
-    private Offcanvas OffcanvasRef { get; set; } = default!;
+    private OffCanvasMenu OffCanvasMenuRef { get; set; } = default!;
     private InviteUserModal InviteUserModalRef { get; set; } = default!;
 
     private CommentDeleteConfirmationModal _deleteConfirmationModal;
     private Guid columnToDeleteId;
 
+    public ProjectDto CurrentProject { get; set; } = new();
+
     protected override async Task OnInitializedAsync()
     {
         await LoadCardsAsync();
         await LoadColumnsAsync();
+        await LoadProjectAsync();
+    }
+
+    private async Task LoadProjectAsync()
+    {
+        try
+        {
+            CurrentProject = await ProjectService.GetById(ProjectId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error loading project: {e.Message}");
+        }
     }
 
     private async Task LoadCardsAsync()
@@ -287,14 +304,14 @@ public partial class Kanban : ComponentBase
         await LoadColumnsAsync();
     }
 
-    private Task ShowOffcanvas()
+    private async Task ShowOffcanvas()
     {
-        return OffcanvasRef.Show();
+        await OffCanvasMenuRef.ShowOffcanvasAsync();
     }
 
-    private Task HideOffcanvas()
+    private async Task HideOffcanvas()
     {
-        return OffcanvasRef.Hide();
+        await OffCanvasMenuRef.HideOffcanvasAsync();
     }
 
     private Task ShowErrorNotification(string message)

@@ -1,6 +1,7 @@
 @page "/Kanban/{projectId:guid}"
 @using Domain.Dtos.Card
 @using UI.Components.Modals
+@using UI.Components.Kanban
 
 
 <Div Style="
@@ -9,9 +10,13 @@ justify-content: space-between;
 align-items: center; 
 background: white; 
 padding: 1rem 1.5rem; 
-box-shadow: 0 2px 4px rgba(0,0,0,0.1); ">
+margin: 10px 20px 10px 20px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+     Border="Border.Rounded">
     <Div Style="display: flex; align-items: center;">
-        <Heading Size="HeadingSize.Is4" Style="margin: 0;">Name</Heading>
+        <Heading Size="HeadingSize.Is4" Style="margin: 0;">
+            @CurrentProject.Title
+        </Heading>
     </Div>
 
     <Div Style="display: flex; align-items: center; gap: 1rem;">
@@ -29,19 +34,8 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1); ">
 <InviteUserModal @ref="@InviteUserModalRef"
                  OnInviteClicked="@OnInviteUserClicked"/>
 
-<Offcanvas @ref="OffcanvasRef" Placement="Placement.End">
-    <OffcanvasHeader TextAlignment="TextAlignment.Center">
-        <Heading>Menu</Heading>
-        <CloseButton Clicked="@HideOffcanvas"/>
-    </OffcanvasHeader>
-    <OffcanvasBody>
-        <Div style="display: flex; flex-direction: column; gap: 1rem;">
-            <Button Color="Color.Link">Option 1</Button>
-            <Button Color="Color.Link">Option 2</Button>
-            <Button Color="Color.Link">Option 3</Button>
-        </Div>
-    </OffcanvasBody>
-</Offcanvas>
+<OffCanvasMenu @ref="@OffCanvasMenuRef"/>
+
 <Div Style="overflow-x: scroll; height: 100%">
     <DropContainer TItem="CardDto" Items="@_cards"
                    ItemsFilter="@((item, dropZone) => item.ColumnId.ToString() == dropZone)"
