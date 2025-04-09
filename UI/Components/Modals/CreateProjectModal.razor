@@ -15,12 +15,6 @@
                         <TextEdit @bind-Text="NewProject.Title"/>
                     </Validation>
                 </Field>
-                <Field>
-                    <Label>Description</Label>
-                    <Validation>
-                        <TextEdit @bind-Text="NewProject.Description"/>
-                    </Validation>
-                </Field>
             </Validations>
         </ModalBody>
         <ModalFooter>
@@ -65,7 +59,11 @@
         if (await fluentValidation.ValidateAll())
         {
             if (OnCreateClicked.HasDelegate)
+            {
+                NewProject.Description = string.Empty;
                 await OnCreateClicked.InvokeAsync(NewProject);
+            }
+                
         }
     }
 }

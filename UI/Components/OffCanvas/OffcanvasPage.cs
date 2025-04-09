@@ -1,4 +1,4 @@
-namespace UI.Components.Kanban;
+namespace UI.Components.OffCanvas;
 
 public enum OffcanvasPage
 {

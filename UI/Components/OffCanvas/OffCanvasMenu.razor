@@ -1,5 +1,9 @@
 <Offcanvas @ref="OffcanvasRef" Placement="Placement.End">
-    <OffcanvasHeader Style="position: relative; display: flex; align-items: center; justify-content: center;">
+    <OffcanvasHeader Style="position: relative; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center;"
+                     Padding="Padding.Is0.FromBottom">
         @if (_currentPage != OffcanvasPage.Main)
         {
             <Button Color="Color.Secondary"
@@ -9,7 +13,9 @@
                 <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.ChevronLeft"/>
             </Button>
         }
-        <Heading Style="margin: 0 auto;">@GetHeaderTitle()</Heading>
+        <Heading Style="margin: 0 auto;">
+            @GetHeaderTitle()
+        </Heading>
         <CloseButton Clicked="@HideOffcanvasAsync" Style="position: absolute; right: 1rem;"/>
     </OffcanvasHeader>
     <Divider/>
@@ -23,45 +29,38 @@
                                    Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;"
                                    Clicked="@(() => _currentPage = OffcanvasPage.About)">
                         <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.InfoCircle"/>
-                        <Span>About Project</Span>
+                        <Span TextSize="TextSize.Medium">About Project</Span>
                     </ListGroupItem>
                     <ListGroupItem Class="list-group-item-action"
                                    Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;"
                                    Clicked="@(() => _currentPage = OffcanvasPage.Activity)">
                         <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.List"/>
-                        <Span>Activity</Span>
+                        <Span TextSize="TextSize.Medium">Activity</Span>
                     </ListGroupItem>
                     <ListGroupItem Class="list-group-item-action"
                                    Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;"
                                    Clicked="@(() => _currentPage = OffcanvasPage.Archive)">
                         <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Archive"/>
-                        <Span>Archive</Span>
+                        <Span TextSize="TextSize.Medium">Archive</Span>
                     </ListGroupItem>
                     <ListGroupItem Class="list-group-item-action"
                                    Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;"
                                    Clicked="@(() => _currentPage = OffcanvasPage.Labels)">
                         <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Tags"/>
-                        <Span>Labels</Span>
+                        <Span TextSize="TextSize.Medium">Labels</Span>
                     </ListGroupItem>
                     <Divider/>
                     <ListGroupItem Class="list-group-item-action"
                                    Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;">
                         <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Minus"/>
-                        <Span>Close Project</Span>
+                        <Span TextSize="TextSize.Medium">Close Project</Span>
                     </ListGroupItem>
                 </ListGroup>
                 ;
                 break;
 
             case OffcanvasPage.About:
-                <Div Style="padding: 1rem;">
-                    <Heading Size="HeadingSize.Is4" Style="margin-bottom: 1rem;">About Project</Heading>
-                    <Paragraph>
-                        Here is some information about your project:
-                        description, contributors, settings, etc.
-                    </Paragraph>
-                </Div>
-                ;
+                <AboutProjectSection CurrentProject="@CurrentProject"/>
                 break;
 
             case OffcanvasPage.Activity:

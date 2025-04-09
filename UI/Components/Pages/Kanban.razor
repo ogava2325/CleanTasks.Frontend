@@ -1,7 +1,7 @@
 @page "/Kanban/{projectId:guid}"
 @using Domain.Dtos.Card
 @using UI.Components.Modals
-@using UI.Components.Kanban
+@using UI.Components.OffCanvas
 
 
 <Div Style="
@@ -14,9 +14,18 @@ margin: 10px 20px 10px 20px;
 box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
      Border="Border.Rounded">
     <Div Style="display: flex; align-items: center;">
-        <Heading Size="HeadingSize.Is4" Style="margin: 0;">
-            @CurrentProject.Title
-        </Heading>
+        @if (IsEditingTitle)
+        {
+            <TextEdit @bind-Text="@EditTitle"
+                      TextSize="TextSize.Heading4"
+                      @onkeydown="HandleTitleKeyDown"/>
+        }
+        else
+        {
+            <Heading Size="HeadingSize.Is4" Style="margin: 0;" @ondblclick="StartEditingTitle">
+                @CurrentProject.Title
+            </Heading>
+        }
     </Div>
 
     <Div Style="display: flex; align-items: center; gap: 1rem;">
@@ -34,7 +43,8 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
 <InviteUserModal @ref="@InviteUserModalRef"
                  OnInviteClicked="@OnInviteUserClicked"/>
 
-<OffCanvasMenu @ref="@OffCanvasMenuRef"/>
+<OffCanvasMenu @ref="@OffCanvasMenuRef"
+               CurrentProject="@CurrentProject"/>
 
 <Div Style="overflow-x: scroll; height: 100%">
     <DropContainer TItem="CardDto" Items="@_cards"

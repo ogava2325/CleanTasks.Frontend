@@ -1,12 +1,18 @@
+using Blazored.TextEditor;
 using Blazorise;
+using Domain.Dtos.Project;
 using Microsoft.AspNetCore.Components;
 
-namespace UI.Components.Kanban;
+namespace UI.Components.OffCanvas;
 
 public partial class OffCanvasMenu : ComponentBase
 {
-    private Offcanvas OffcanvasRef;
+    [Parameter] public ProjectDto CurrentProject { get; set; } = new();
+    private Offcanvas OffcanvasRef { get; set; } = default!;
+    
     private OffcanvasPage _currentPage = OffcanvasPage.Main;
+
+    public BlazoredTextEditor BlazoredTextEditor1 { get; set; }
 
     private string GetHeaderTitle() =>
         _currentPage switch

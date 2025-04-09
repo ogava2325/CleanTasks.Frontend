@@ -6,10 +6,11 @@ using Domain.Dtos.Project;
 using Domain.Dtos.State;
 using Domain.Dtos.User;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Refit;
 using services.External;
-using UI.Components.Kanban;
 using UI.Components.Modals;
+using UI.Components.OffCanvas;
 using UI.Services;
 
 namespace UI.Components.Pages;
@@ -42,7 +43,10 @@ public partial class Kanban : ComponentBase
     private CommentDeleteConfirmationModal _deleteConfirmationModal;
     private Guid columnToDeleteId;
 
-    public ProjectDto CurrentProject { get; set; } = new();
+    private ProjectDto CurrentProject { get; set; } = new();
+
+    private bool IsEditingTitle { get; set; }
+    private string EditTitle { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -317,5 +321,49 @@ public partial class Kanban : ComponentBase
     private Task ShowErrorNotification(string message)
     {
         return NotificationService.Error(message);
+    }
+    
+    private void StartEditingTitle()
+    {
+        IsEditingTitle = true;
+        EditTitle = CurrentProject.Title;
+    }
+    
+    private async Task HandleTitleKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "Enter":
+                CurrentProject.Title = EditTitle;
+                await UpdateProjectTitleAsync();
+            
+                IsEditingTitle = false;
+                break;
+            case "Escape":
+                IsEditingTitle = false;
+                break;
+        }
+    }
+
+    private async Task UpdateProjectTitleAsync()
+    {
+        var projectToUpdate = new UpdateProjectDto
+        {
+            Id = CurrentProject.Id,
+            Title = EditTitle,
+            Description = CurrentProject.Description,
+            UserId = await AuthStateProvider.GetUserIdAsync()
+        };
+
+        try
+        {
+            var token = await AuthStateProvider.GetToken();
+            await ProjectService.UpdateAsync(CurrentProject.Id, projectToUpdate, $"Bearer {token}");
+            await LoadProjectAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error saving project title: {e.Message}");
+        }
     }
 }

@@ -28,7 +28,13 @@ public interface IProjectService
     [Delete("/api/projects/{id}")]
     Task DeleteAsync(Guid id);
     
-    [Post("/api/projects/{projectId}")]
+    [Put("/api/projects/{id}")]
+    Task UpdateAsync(
+        Guid id, 
+        [Body] UpdateProjectDto command,
+        [Header("Authorization")] string authorization);
+    
+    [Post("/api/projects/{projectId}/users")]
     Task AddUserToProjectAsync(
         Guid projectId,
         [Body] AddUserToProjectsDto command,
