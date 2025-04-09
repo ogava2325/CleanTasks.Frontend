@@ -16,24 +16,35 @@ public interface IProjectService
         [Query] ProjectsSortBy sortBy,
         [Query] ProjectsSortOrder sortOrder,
         [Query] DateTimeOffset? startDate,
-        [Query] DateTimeOffset? endDate
+        [Query] DateTimeOffset? endDate,
+        [Header("Authorization")] string authorization
     );
-    
+
     [Get("/api/projects/{id}")]
-    Task<ProjectDto> GetById(Guid id);
-    
+    Task<ProjectDto> GetById(
+        Guid id,
+        [Header("Authorization")] string authorization
+    );
+
     [Post("/api/projects")]
-    Task<ProjectDto> CreateAsync([Body] CreateProjectDto command);
+    Task<ProjectDto> CreateAsync(
+        [Body] CreateProjectDto command,
+        [Header("Authorization")] string authorization
+    );
 
     [Delete("/api/projects/{id}")]
-    Task DeleteAsync(Guid id);
-    
+    Task DeleteAsync(
+        Guid id,
+        [Header("Authorization")] string authorization
+    );
+
     [Put("/api/projects/{id}")]
     Task UpdateAsync(
-        Guid id, 
+        Guid id,
         [Body] UpdateProjectDto command,
-        [Header("Authorization")] string authorization);
-    
+        [Header("Authorization")] string authorization
+    );
+
     [Post("/api/projects/{projectId}/users")]
     Task AddUserToProjectAsync(
         Guid projectId,

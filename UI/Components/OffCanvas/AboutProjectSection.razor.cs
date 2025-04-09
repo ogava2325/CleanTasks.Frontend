@@ -11,11 +11,11 @@ public partial class AboutProjectSection : ComponentBase
     [Parameter] public ProjectDto CurrentProject { get; set; } = new();
     [Inject] public IProjectService ProjectService { get; set; } = default!;
     [Inject] public CustomAuthStateProvider AuthStateProvider { get; set; } = default!;
-
     
     private bool IsEditing { get; set; }
 
     private RichTextEdit richTextEdit;
+    
     private async Task StartEditing()
     {
         IsEditing = true;
@@ -27,8 +27,8 @@ public partial class AboutProjectSection : ComponentBase
     {
         try
         {
-            CurrentProject = await ProjectService.GetById(CurrentProject.Id);
-            // shouldLoadEditorContent = true;
+            var token = AuthStateProvider.GetToken();
+            CurrentProject = await ProjectService.GetById(CurrentProject.Id, $"Bearer {token}");
         }
         catch (Exception e)
         {

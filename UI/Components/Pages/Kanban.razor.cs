@@ -59,7 +59,8 @@ public partial class Kanban : ComponentBase
     {
         try
         {
-            CurrentProject = await ProjectService.GetById(ProjectId);
+            var token = await AuthStateProvider.GetToken();
+            CurrentProject = await ProjectService.GetById(ProjectId, $"Bearer {token}");
         }
         catch (Exception e)
         {
