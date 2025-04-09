@@ -5,6 +5,6 @@ namespace services.External;
 
 public interface IStatsService
 {
-    [Get("/api/stats")]
-    Task<StatsDto> GetAsync();
+    [Get("/api/stats/{userId}")]
+    Task<StatsDto> GetAsync(Guid userId);
 }

@@ -2,7 +2,9 @@ namespace Domain.Dtos.Stats;
 
 public class StatsDto
 {
-    public int ProjectsCount { get; set; }
-    public int CardsCount { get; set; }
-    public int UsersCount { get; set; }
+    public int ProjectsCreatedCount { get; set; }
+    
+    public int CardsCreatedCount { get; set; }
+    
+    public int ProjectsMemberCount { get; set; }
 }
