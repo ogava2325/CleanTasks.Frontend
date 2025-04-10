@@ -72,7 +72,9 @@ public partial class Kanban : ComponentBase
     {
         try
         {
-            _cards = (await CardService.GetAll())
+            var token = await AuthStateProvider.GetToken();
+            
+            _cards = (await CardService.GetAll($"Bearer {token}"))
                 .OrderBy(c => c.RowIndex)
                 .ToList();
         }
@@ -131,7 +133,9 @@ public partial class Kanban : ComponentBase
 
         try
         {
-            var cardId = await CardService.CreateAsync(newCardDto);
+            var token =  await AuthStateProvider.GetToken();
+            var cardId = await CardService.CreateAsync(newCardDto, $"Bearer {token}");
+            
             await LoadCardsAsync();
 
             try
@@ -218,7 +222,10 @@ public partial class Kanban : ComponentBase
                 ColumnId = updatedCard.ColumnId,
                 RowIndex = updatedCard.RowIndex
             };
-            await CardService.UpdateAsync(updatedCard.Id, updateDto);
+            
+            var token = await AuthStateProvider.GetToken();
+            
+            await CardService.UpdateAsync(updatedCard.Id, updateDto, $"Bearer {token}");
         });
 
         try
