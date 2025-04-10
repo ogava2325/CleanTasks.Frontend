@@ -1,21 +1,66 @@
 @page "/Kanban/{projectId:guid}"
 @using Domain.Dtos.Card
 @using UI.Components.Modals
+@using UI.Components.OffCanvas
 
-<DropContainer TItem="CardDto" Items="@_cards"
-               ItemsFilter="@((item, dropZone) => item.ColumnId.ToString() == dropZone)"
-               ItemDropped="@ItemDropped"
-               Style="
+
+<Div Style="
+display: flex; 
+justify-content: space-between; 
+align-items: center; 
+background: white; 
+padding: 1rem 1.5rem; 
+margin: 10px 20px 10px 20px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+     Border="Border.Rounded">
+    <Div Style="display: flex; align-items: center;">
+        @if (IsEditingTitle)
+        {
+            <TextEdit @bind-Text="@EditTitle"
+                      TextSize="TextSize.Heading4"
+                      @onkeydown="HandleTitleKeyDown"/>
+        }
+        else
+        {
+            <Heading Size="HeadingSize.Is4" Style="margin: 0;" @ondblclick="StartEditingTitle">
+                @CurrentProject.Title
+            </Heading>
+        }
+    </Div>
+
+    <Div Style="display: flex; align-items: center; gap: 1rem;">
+        <Button Color="Color.Primary" Clicked="@ShowInviteUserModal">
+            <Icon Name="IconName.UserPlus" class="me-1"/>
+            Invite
+        </Button>
+
+        <Button Clicked="@ShowOffcanvas">
+            <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Ellipsis" Class="me-1"/>
+        </Button>
+    </Div>
+</Div>
+
+<InviteUserModal @ref="@InviteUserModalRef"
+                 OnInviteClicked="@OnInviteUserClicked"/>
+
+<OffCanvasMenu @ref="@OffCanvasMenuRef"
+               CurrentProject="@CurrentProject"/>
+
+<Div Style="overflow-x: scroll; height: 100%">
+    <DropContainer TItem="CardDto" Items="@_cards"
+                   ItemsFilter="@((item, dropZone) => item.ColumnId.ToString() == dropZone)"
+                   ItemDropped="@ItemDropped"
+                   Style="
                display: flex; 
                align-items: flex-start; 
                gap: 20px; 
                padding: 20px; 
                flex-wrap: nowrap;"
-               @key="@_cards.Count">
-    <ChildContent>
-        @foreach (var column in _columns)
-        {
-            <Div Style="
+                   @key="@_cards.Count">
+        <ChildContent>
+            @foreach (var column in _columns)
+            {
+                <Div Style="
                 background: #f4f5f7; 
                 border-radius: 8px; 
                 padding: 10px; 
@@ -24,39 +69,38 @@
                 flex-direction: column; 
                 flex-shrink: 0;
                 box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);"
-                 Margin="Margin.Is0" Border="Border.Rounded">
+                     Margin="Margin.Is0" Border="Border.Rounded">
 
-                <Row  Class="d-flex justify-content-between align-items-center">
-                    <Column>
-                        <Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom.Is1.FromStart">
-                            @column.Title
-                        </Heading>
-                    </Column>
-                    <Column Class="col-auto">
-                        <Button
-                            Size="Size.Small"
-                            Clicked="@(() => OnDeleteClicked(column.Id))">
+                    <Row Class="d-flex justify-content-between align-items-center">
+                        <Column>
+                            <Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom.Is1.FromStart">
+                                @column.Title
+                            </Heading>
+                        </Column>
+                        <Column Class="col-auto">
+                            <Button
+                                Size="Size.Small"
+                                Clicked="@(() => OnDeleteClicked(column.Id))">
 
-                            <Icon Name="IconName.Delete" TextColor="TextColor.Dark"></Icon>
-                        </Button>
-                    </Column>
-                </Row>
-                
+                                <Icon Name="IconName.Delete" TextColor="TextColor.Dark"></Icon>
+                            </Button>
+                        </Column>
+                    </Row>
 
-                <DropZone TItem="CardDto" Name="@column.Id.ToString()"
-                          AllowReorder
-                          DraggingClass="draggable-card.dragging"
-                          Style="
+                    <DropZone TItem="CardDto" Name="@column.Id.ToString()"
+                              AllowReorder
+                              DraggingClass="draggable-card.dragging"
+                              Style="
                           display: flex; 
                           flex-direction: column; 
                           gap: 10px;
                           min-height: 50px;  /* Ensures visible space even if empty */">
-                </DropZone>
+                    </DropZone>
 
-                @if (_activeColumnId == column.Id)
-                {
-                    <TextEdit @bind-Text="@_newCard.Title" Placeholder="Enter card title..."
-                              Style="
+                    @if (_activeColumnId == column.Id)
+                    {
+                        <TextEdit @bind-Text="@_newCard.Title" Placeholder="Enter card title..."
+                                  Style="
                               width: 100%; 
                               margin-top: 10px;
                               padding: 10px; 
@@ -65,42 +109,42 @@
                               background: white; 
                               box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);"/>
 
-                    <Div Style="
+                        <Div Style="
                             display: flex; 
                             gap: 10px; 
                             justify-content: flex-end; 
                             margin-top: 5px;">
-                        <Button Style="width: 100%"
-                                Color="Color.Success" Clicked="() => CreateCardAsync(column.Id)">
-                            Add
-                        </Button>
+                            <Button Style="width: 100%"
+                                    Color="Color.Success" Clicked="() => CreateCardAsync(column.Id)">
+                                Add
+                            </Button>
 
-                        <Button Style="width: 100%"
-                                Color="Color.Secondary" Clicked="() => CancelAddingCard()">
-                            Cancel
-                        </Button>
-                    </Div>
-                }
-                else
-                {
-                    <Button Color="Color.Primary"
-                            Style="
+                            <Button Style="width: 100%"
+                                    Color="Color.Secondary" Clicked="() => CancelAddingCard()">
+                                Cancel
+                            </Button>
+                        </Div>
+                    }
+                    else
+                    {
+                        <Button Color="Color.Primary"
+                                Style="
                         width: 100%; margin-top: 10px;"
-                            Clicked="@(() => StartAddingCard(column.Id))">
-                        Add Card
-                    </Button>
-                }
-            </Div>
-        }
+                                Clicked="@(() => StartAddingCard(column.Id))">
+                            Add Card
+                        </Button>
+                    }
+                </Div>
+            }
 
-        <CommentDeleteConfirmationModal @ref="_deleteConfirmationModal"
-                                        Title="Delete Comment"
-                                        Message="Are you sure you want to delete this comment?"
-                                        ConfirmText="Delete"
-                                        CancelText="Cancel"
-                                        OnConfirmed="@ConfirmDeleteCommentAsync" />
+            <CommentDeleteConfirmationModal @ref="_deleteConfirmationModal"
+                                            Title="Delete Comment"
+                                            Message="Are you sure you want to delete this comment?"
+                                            ConfirmText="Delete"
+                                            CancelText="Cancel"
+                                            OnConfirmed="@ConfirmDeleteCommentAsync"/>
 
-        <Div Style="
+            <Div Style="
             background: #f4f5f7; 
             border-radius: 8px; 
             padding: 10px; 
@@ -110,60 +154,54 @@
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
             flex-shrink: 0;">
 
-            @if (_isAddingColumn)
-            {
-                <TextEdit @bind-Text="@_newColumn.Title" Placeholder="Enter column title..."
-                          Style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #d1d1d1; background: white; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);"/>
-                
-                <Div Style="
+                @if (_isAddingColumn)
+                {
+                    <TextEdit @bind-Text="@_newColumn.Title" Placeholder="Enter column title..."
+                              Style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #d1d1d1; background: white; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);"/>
+
+                    <Div Style="
                             display: flex; 
                             gap: 10px; 
                             justify-content: flex-end; 
                             margin-top: 5px;">
-                    <Button Style="width: 100%"
-                            Color="Color.Success" Clicked="CreateColumnAsync">
-                        Add
+                        <Button Style="width: 100%"
+                                Color="Color.Success" Clicked="CreateColumnAsync">
+                            Add
+                        </Button>
+
+                        <Button Style="width: 100%"
+                                Color="Color.Secondary" Clicked="CancelAddingColumn">
+                            Cancel
+                        </Button>
+                    </Div>
+                }
+                else
+                {
+                    <Button Color="Color.Primary"
+                            Style="width: 100%;"
+                            Clicked="StartAddingColumn">
+                        + Add Another Column
                     </Button>
+                }
+            </Div>
 
-                    <Button Style="width: 100%"
-                            Color="Color.Secondary" Clicked="CancelAddingColumn">
-                        Cancel
-                    </Button>
-                </Div>
-            }
-            else
-            {
-                <Button Color="Color.Primary"
-                        Style="width: 100%;"
-                        Clicked="StartAddingColumn">
-                    + Add Another Column
-                </Button>
-            }
-        </Div>
+            <CardDetailsModal @ref="CardDetailsModalRef"
+                              CardId="@_selectedCardId"
+                              OnCancelClicked="@HideCardDetailsModal"/>
 
-        <CardDetailsModal @ref="_cardDetailsModalRef"
-                          CardId="@_selectedCardId"
-                          OnCancelClicked="@HideModal"/>
-        
-    </ChildContent>
+        </ChildContent>
 
-    <ItemTemplate>
-        <Card Shadow="Shadow.Default"
-              Style="
+        <ItemTemplate>
+            <Card Shadow="Shadow.Default"
+                  Style="
               border-radius: 8px; 
               background: white; 
               box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); 
               width: 100%;">
-            <CardBody @onclick="@(() => ShowModal(context))">
-                @context.Title
-            </CardBody>
-        </Card>
-    </ItemTemplate>
-</DropContainer>
-
-<Alert Color="Color.Danger" Visible="@_showDeleteColumnError">
-    <AlertDescription>
-        Cannot delete this column because it still has cards.
-    </AlertDescription>
-    <CloseButton Clicked="@(() => _showDeleteColumnError = false)"/>
-</Alert>
+                <CardBody @onclick="@(() => ShowCardDetailsModal(context))">
+                    @context.Title
+                </CardBody>
+            </Card>
+        </ItemTemplate>
+    </DropContainer>
+</Div>

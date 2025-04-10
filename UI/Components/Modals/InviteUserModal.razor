@@ -1,0 +1,29 @@
+@using Domain.Dtos.User
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Invite users to project</ModalTitle>
+            <CloseButton Clicked="OnCancel"/>
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <Label>Select User</Label>
+                <SelectList TItem="@UserDto"
+                            TValue="Guid"
+                            Data="@Users"
+                            TextField="@((item)=>item.Email)"
+                            ValueField="@((item)=>item.Id)"
+                            @bind-SelectedValue="SelectedUserId">
+                </SelectList>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@OnCancel">
+                Cancel
+            </Button>
+            <Button Color="Color.Primary" Clicked="@OnInvite">
+                Invite user
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

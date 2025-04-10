@@ -2,6 +2,7 @@ using Blazorise;
 using Blazorise.Bootstrap5;
 using Blazorise.FluentValidation;
 using Blazorise.Icons.FontAwesome;
+using Blazorise.RichTextEdit;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -34,7 +35,12 @@ builder.Services
     .AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrap5Providers()
     .AddFontAwesomeIcons()
-    .AddBlazoriseFluentValidation();
+    .AddBlazoriseFluentValidation()
+    .AddBlazoriseRichTextEdit(options =>
+    {
+        options.UseTables = false;
+        options.UseBubbleTheme = true;
+    });
 
 builder.Services.AddValidatorsFromAssembly(typeof(App).Assembly);
 

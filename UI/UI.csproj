@@ -11,10 +11,12 @@
       <PackageReference Include="Blazored.TextEditor" Version="1.1.2" />
       <PackageReference Include="Blazorise" Version="1.7.3" />
       <PackageReference Include="Blazorise.Bootstrap5" Version="1.7.3" />
+      <PackageReference Include="Blazorise.Components" Version="1.7.0" />
       <PackageReference Include="Blazorise.DataGrid" Version="1.7.3" />
       <PackageReference Include="Blazorise.FluentValidation" Version="1.6.2" />
       <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.7.3" />
       <PackageReference Include="Blazorise.LoadingIndicator" Version="1.6.2" />
+      <PackageReference Include="Blazorise.RichTextEdit" Version="1.7.3" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
       <PackageReference Include="NewsAPI" Version="0.7.0" />
       <PackageReference Include="Refit" Version="8.0.0" />
@@ -34,6 +36,11 @@
       <Content Update="Components\Shared\TopBar.razor.cs">
         <DependentUpon>TopBar.razor</DependentUpon>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\OffcanvasSections\AboutBoardSection.razor" />
+      <_ContentIncludedByDefault Remove="Components\OffcanvasSections\MainMenuSection.razor" />
     </ItemGroup>
 
 </Project>

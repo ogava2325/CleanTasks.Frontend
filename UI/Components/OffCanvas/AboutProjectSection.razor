@@ -1,0 +1,53 @@
+<Div Style="padding: 1rem;">
+    <Div Style="
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 10px;">
+
+        <Div Style="display: flex; align-items: center; gap: 0.5rem;">
+            <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.FileText"/>
+            <Heading Size="HeadingSize.Is4" Style="margin: 0;">About Project</Heading>
+        </Div>
+
+        <Button Color="Color.Primary" Clicked="@StartEditing">
+            Edit
+        </Button>
+    </Div>
+    
+    @if (IsEditing)
+    {
+        <RichTextEdit @ref="@richTextEdit"
+                      Theme="RichTextEditTheme.Snow"
+                      PlaceHolder="Type your description here..."
+                      SubmitOnEnter="false"
+                      ToolbarPosition="Placement.Top">
+            <Editor>My example content</Editor>
+            <Toolbar>
+                <RichTextEditToolbarGroup>
+                    <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                    <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                    <RichTextEditToolbarSelect Action="RichTextEditAction.Size">
+                        <RichTextEditToolbarSelectItem Value="small" />
+                        <RichTextEditToolbarSelectItem Selected />
+                        <RichTextEditToolbarSelectItem Value="large" />
+                        <RichTextEditToolbarSelectItem Value="huge">Very Big</RichTextEditToolbarSelectItem>
+                    </RichTextEditToolbarSelect>
+                    <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                    <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                </RichTextEditToolbarGroup>
+            </Toolbar>
+        </RichTextEdit>
+        <Div Style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <Button Color="Color.Success" Clicked="@SaveDescription">Save</Button>
+            <Button Color="Color.Secondary" Clicked="@CancelEditing">Cancel</Button>
+        </Div>
+    }
+    else
+    {
+        <Paragraph 
+            Style="white-space: pre-wrap; line-height: 1.5; margin-bottom: 0;">
+            @((MarkupString)CurrentProject.Description)
+        </Paragraph>
+    }
+</Div>

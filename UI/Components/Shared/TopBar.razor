@@ -18,10 +18,13 @@
                 <BarLink To="/">Home</BarLink>
             </BarItem>
         </BarStart>
-        <BarEnd>
+        <BarEnd Gap="Gap.Is2">
+            <BarItem>
+                   @UserInfo.Name
+            </BarItem>
             <BarItem>
                 <BarDropdown>
-                    <BarDropdownItem Clicked="Logout">
+                    <BarDropdownItem Clicked="Logout" Style="cursor: pointer">
                         Logout
                     </BarDropdownItem>
                 </BarDropdown>

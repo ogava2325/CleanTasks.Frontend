@@ -14,8 +14,10 @@
                         <Strong>Projects</Strong>
                     </CardHeader>
                     <CardBody>
-                        <Heading Size="HeadingSize.Is2">@ProjectsCountText</Heading>
-                        <p>Total @ProjectPlural</p>
+                        <Heading Size="HeadingSize.Is2">
+                            @CreatedProjectsCountText
+                        </Heading>
+                        <Paragraph>@CreatedProjectPlural created</Paragraph>
                     </CardBody>
                     <CardFooter>
                         <Button Color="Color.Primary" Clicked="@(() => NavigationManager.NavigateTo("/projects"))">
@@ -25,26 +27,39 @@
                     </CardFooter>
                 </Card>
             </Column>
+            
             <Column Class="col-sm-4 mb-3">
                 <Card Background="Background.Light" TextColor="TextColor.Dark" Class="h-100">
                     <CardHeader>
-                        <Strong>Cards</Strong>
+                        <Strong>Projects</Strong>
                     </CardHeader>
                     <CardBody>
-                        <Heading Size="HeadingSize.Is2">@CardsCountText</Heading>
-                        <Paragraph>Open @TaskPlural</Paragraph>
+                        <Heading Size="HeadingSize.Is2">
+                            @ProjectsMemberCountText
+                        </Heading>
+                        <Paragraph>@ProjectMemberPlural where you’re a member</Paragraph>
                     </CardBody>
+                    <CardFooter>
+                        <Button Color="Color.Primary" Clicked="@(() => NavigationManager.NavigateTo("/projects"))">
+                            <Icon Name="IconName.List"/>
+                            <Span class="ms-2">View All</Span>
+                        </Button>
+                    </CardFooter>
                 </Card>
             </Column>
 
             <Column Class="col-sm-4 mb-3">
                 <Card Background="Background.Light" TextColor="TextColor.Dark" Class="h-100">
                     <CardHeader>
-                        <Strong>Users</Strong>
+                        <Strong>Cards</Strong>
                     </CardHeader>
                     <CardBody>
-                        <Heading Size="HeadingSize.Is2">@UsersCountText</Heading>
-                        <Paragraph>@UserPlural</Paragraph>
+                        <Heading Size="HeadingSize.Is2">
+                            @CardsCountText 
+                        </Heading>
+                        <Paragraph>
+                            @CardPlural created
+                        </Paragraph>
                     </CardBody>
                 </Card>
             </Column>

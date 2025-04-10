@@ -1,0 +1,97 @@
+<Offcanvas @ref="OffcanvasRef" Placement="Placement.End">
+    <OffcanvasHeader Style="position: relative; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center;"
+                     Padding="Padding.Is0.FromBottom">
+        @if (_currentPage != OffcanvasPage.Main)
+        {
+            <Button Color="Color.Secondary"
+                    Class="position-absolute"
+                    Style="left: 1rem;"
+                    Clicked="@(() => _currentPage = OffcanvasPage.Main)">
+                <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.ChevronLeft"/>
+            </Button>
+        }
+        <Heading Style="margin: 0 auto;">
+            @GetHeaderTitle()
+        </Heading>
+        <CloseButton Clicked="@HideOffcanvasAsync" Style="position: absolute; right: 1rem;"/>
+    </OffcanvasHeader>
+    <Divider/>
+
+    <OffcanvasBody>
+        @switch (_currentPage)
+        {
+            case OffcanvasPage.Main:
+                <ListGroup Flush>
+                    <ListGroupItem Class="list-group-item-action"
+                                   Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;"
+                                   Clicked="@(() => _currentPage = OffcanvasPage.About)">
+                        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.InfoCircle"/>
+                        <Span TextSize="TextSize.Medium">About Project</Span>
+                    </ListGroupItem>
+                    <ListGroupItem Class="list-group-item-action"
+                                   Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;"
+                                   Clicked="@(() => _currentPage = OffcanvasPage.Activity)">
+                        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.List"/>
+                        <Span TextSize="TextSize.Medium">Activity</Span>
+                    </ListGroupItem>
+                    <ListGroupItem Class="list-group-item-action"
+                                   Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;"
+                                   Clicked="@(() => _currentPage = OffcanvasPage.Archive)">
+                        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Archive"/>
+                        <Span TextSize="TextSize.Medium">Archive</Span>
+                    </ListGroupItem>
+                    <ListGroupItem Class="list-group-item-action"
+                                   Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;"
+                                   Clicked="@(() => _currentPage = OffcanvasPage.Labels)">
+                        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Tags"/>
+                        <Span TextSize="TextSize.Medium">Labels</Span>
+                    </ListGroupItem>
+                    <Divider/>
+                    <ListGroupItem Class="list-group-item-action"
+                                   Style="border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;">
+                        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Minus"/>
+                        <Span TextSize="TextSize.Medium">Close Project</Span>
+                    </ListGroupItem>
+                </ListGroup>
+                ;
+                break;
+
+            case OffcanvasPage.About:
+                <AboutProjectSection CurrentProject="@CurrentProject"/>
+                break;
+
+            case OffcanvasPage.Activity:
+                <Div Style="padding: 1rem;">
+                    <Heading Size="HeadingSize.Is4" Style="margin-bottom: 1rem;">Activity</Heading>
+                    <Paragraph>
+                        Here is the activity log. You can display recent actions, updates, or comments.
+                    </Paragraph>
+                </Div>
+                ;
+                break;
+
+            case OffcanvasPage.Labels:
+                <Div Style="padding: 1rem;">
+                    <Heading Size="HeadingSize.Is4" Style="margin-bottom: 1rem;">Labels</Heading>
+                    <Paragraph>
+                        Here you can manage your labels. Assign colors and names to organize your cards.
+                    </Paragraph>
+                </Div>
+                ;
+                break;
+
+            case OffcanvasPage.Archive:
+                <Div Style="padding: 1rem;">
+                    <Heading Size="HeadingSize.Is4" Style="margin-bottom: 1rem;">Labels</Heading>
+                    <Paragraph>
+                        Here you can manage your archive. View archived card and etc.
+                    </Paragraph>
+                </Div>
+                ;
+                break;
+        }
+    </OffcanvasBody>
+</Offcanvas>

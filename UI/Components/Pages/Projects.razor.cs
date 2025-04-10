@@ -76,6 +76,8 @@ public partial class Projects : ComponentBase
             var (sortBy, sortOrder) = SortMapping[SelectedSortOption];
 
             var adjustedEndDate = EndDate?.Date.AddDays(1).AddSeconds(-1);
+            
+            var token = await AuthStateProvider.GetToken();
 
             PaginatedProjectsList = await ProjectService.GetByUserId(
                 userId,
@@ -85,7 +87,8 @@ public partial class Projects : ComponentBase
                 sortBy,
                 sortOrder,
                 StartDate,
-                adjustedEndDate
+                adjustedEndDate,
+                $"Bearer {token}"
             );
             
             StateHasChanged();
@@ -113,9 +116,9 @@ public partial class Projects : ComponentBase
         try
         {
             NewProject.UserId = await AuthStateProvider.GetUserIdAsync();
-            NewProject.RoleId = Guid.Parse("18C7423E-F36B-1410-8ED2-0074E3FF4145");
 
-            await ProjectService.CreateAsync(NewProject);
+            var token = await AuthStateProvider.GetToken();
+            await ProjectService.CreateAsync(NewProject, $"Bearer {token}");
             await LoadProjectsAsync();
             await HideCreateProjectModal();
         }
@@ -129,7 +132,9 @@ public partial class Projects : ComponentBase
     {
         try
         {
-            await ProjectService.DeleteAsync(projectId);
+            var token = await AuthStateProvider.GetToken();
+            
+            await ProjectService.DeleteAsync(projectId, $"Bearer {token}");
             await LoadProjectsAsync();
             StateHasChanged();
         }

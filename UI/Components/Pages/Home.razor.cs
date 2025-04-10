@@ -4,6 +4,7 @@ using NewsAPI;
 using NewsAPI.Constants;
 using NewsAPI.Models;
 using services.External;
+using UI.Services;
 
 namespace UI.Components.Pages;
 
@@ -12,6 +13,7 @@ public partial class Home : ComponentBase
     [Inject] public IStatsService StatsService { get; set; }
     [Inject] public IConfiguration Configuration { get; set; }
     [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public CustomAuthStateProvider AuthStateProvider { get; set; }
     
     private StatsDto Stats { get; set; } = new();
     private List<Article> Articles { get; set; } = [];
@@ -28,7 +30,8 @@ public partial class Home : ComponentBase
     {
         try
         {
-            Stats = await StatsService.GetAsync();
+            var currentUserId = await AuthStateProvider.GetUserIdAsync();
+            Stats = await StatsService.GetAsync(currentUserId);
         }
         catch (Exception e)
         {
@@ -82,11 +85,11 @@ public partial class Home : ComponentBase
         return count == 1 ? $"1 {label}" : $"{count} {label}s";
     }
     
-    private string ProjectsCountText => FormatCount(Stats.ProjectsCount, "Project");
-    private string CardsCountText => FormatCount(Stats.CardsCount, "Card");
-    private string UsersCountText => FormatCount(Stats.UsersCount, "User");
+    private string CreatedProjectsCountText => FormatCount(Stats.ProjectsCreatedCount, "Project");
+    private string ProjectsMemberCountText => FormatCount(Stats.ProjectsMemberCount, "Project");
+    private string CardsCountText => FormatCount(Stats.CardsCreatedCount, "Card");
 
-    private string ProjectPlural => Stats.ProjectsCount == 1 ? "Project" : "Projects";
-    private string TaskPlural => Stats.CardsCount == 1 ? "Task" : "Tasks";
-    private string UserPlural => Stats.UsersCount == 1 ? "User" : "Users";
+    private string CreatedProjectPlural => Stats.ProjectsCreatedCount == 1 ? "Project" : "Projects";
+    private string ProjectMemberPlural => Stats.ProjectsMemberCount == 1 ? "Project" : "Projects";
+    private string CardPlural => Stats.CardsCreatedCount == 1 ? "Task" : "Tasks";
 }
