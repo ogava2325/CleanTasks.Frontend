@@ -10,16 +10,22 @@ public interface IProjectService
     [Get("/api/projects")]
     Task<PaginatedList<ProjectDto>> GetByUserId(
         [Query] Guid userId,
-        [Query] int pageNumber,
-        [Query] int pageSize,
-        [Query] string? searchTerm,
-        [Query] ProjectsSortBy sortBy,
-        [Query] ProjectsSortOrder sortOrder,
+        [Query] PaginationParameters paginationParameters,
+        [Query] DateTimeOffset? startDate,
+        [Query] DateTimeOffset? endDate,
+        [Query] bool includeArchived,
+        [Header("Authorization")] string authorization
+    );
+
+    [Get("/api/projects/archived")]
+    Task<PaginatedList<ProjectDto>> GetArchivedByUserId(
+        [Query] Guid userId,
+        [Query] PaginationParameters paginationParameters,
         [Query] DateTimeOffset? startDate,
         [Query] DateTimeOffset? endDate,
         [Header("Authorization")] string authorization
     );
-
+    
     [Get("/api/projects/{id}")]
     Task<ProjectDto> GetById(
         Guid id,
@@ -49,6 +55,18 @@ public interface IProjectService
     Task AddUserToProjectAsync(
         Guid projectId,
         [Body] AddUserToProjectsDto command,
+        [Header("Authorization")] string authorization
+    );
+    
+    [Put("/api/projects/{id}/archive")]
+    Task ArchiveAsync(
+        Guid id,
+        [Header("Authorization")] string authorization
+    );
+    
+    [Put("/api/projects/{id}/restore")]
+    Task RestoreAsync(
+        Guid id,
         [Header("Authorization")] string authorization
     );
 }

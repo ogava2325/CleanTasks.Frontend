@@ -3,7 +3,17 @@
 @using UI.Components.Modals
 @using UI.Components.OffCanvas
 
-
+@if (CurrentProject.IsArchived)
+{
+    <Div Style="background: #f8d7da; min-height: 40px; width: 100%; display: flex; align-items: center; justify-content: center;"
+         Gap="Gap.Is2"
+         TextAlignment="TextAlignment.Center">
+        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.InfoCircle" TextColor="TextColor.Dark"/>
+        <Text>
+            This project is archived. To edit it, restore it from the menu.
+        </Text>
+    </Div>
+}
 <Div Style="
 display: flex; 
 justify-content: space-between; 
@@ -29,7 +39,7 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
     </Div>
 
     <Div Style="display: flex; align-items: center; gap: 1rem;">
-        <Button Color="Color.Primary" Clicked="@ShowInviteUserModal">
+        <Button Color="Color.Primary" Clicked="@ShowInviteUserModal" Disabled="@CurrentProject.IsArchived">
             <Icon Name="IconName.UserPlus" class="me-1"/>
             Invite
         </Button>
@@ -44,12 +54,15 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
                  OnInviteClicked="@OnInviteUserClicked"/>
 
 <OffCanvasMenu @ref="@OffCanvasMenuRef"
-               CurrentProject="@CurrentProject"/>
+               CurrentProject="@CurrentProject"
+               OnProjectArchive="LoadProjectAsync"
+               OnProjectRestore="LoadProjectAsync"/>
 
 <Div Style="overflow-x: scroll; height: 100%">
     <DropContainer TItem="CardDto" Items="@_cards"
                    ItemsFilter="@((item, dropZone) => item.ColumnId.ToString() == dropZone)"
                    ItemDropped="@ItemDropped"
+                   DropAllowed="@((card, dropZone) => !CurrentProject.IsArchived)"
                    Style="
                display: flex; 
                align-items: flex-start; 
@@ -79,6 +92,7 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
                         </Column>
                         <Column Class="col-auto">
                             <Button
+                                Disabled="@CurrentProject.IsArchived"
                                 Size="Size.Small"
                                 Clicked="@(() => OnDeleteClicked(column.Id))">
 
@@ -130,7 +144,8 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
                         <Button Color="Color.Primary"
                                 Style="
                         width: 100%; margin-top: 10px;"
-                                Clicked="@(() => StartAddingCard(column.Id))">
+                                Clicked="@(() => StartAddingCard(column.Id))"
+                                Disabled="@CurrentProject.IsArchived">
                             Add Card
                         </Button>
                     }
@@ -179,7 +194,8 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
                 {
                     <Button Color="Color.Primary"
                             Style="width: 100%;"
-                            Clicked="StartAddingColumn">
+                            Clicked="StartAddingColumn"
+                            Disabled="@CurrentProject.IsArchived">
                         + Add Another Column
                     </Button>
                 }

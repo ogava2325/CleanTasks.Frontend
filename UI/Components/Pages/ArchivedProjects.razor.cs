@@ -7,7 +7,7 @@ using UI.Services;
 
 namespace UI.Components.Pages;
 
-public partial class Projects : ComponentBase
+public partial class ArchivedProjects : ComponentBase
 {
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private CustomAuthStateProvider AuthStateProvider { get; set; } = default!;
@@ -15,7 +15,6 @@ public partial class Projects : ComponentBase
 
     private PaginatedList<ProjectDto>? PaginatedProjectsList { get; set; }
 
-    private CreateProjectDto NewProject { get; set; } = new();
     private CreateProjectModal ProjectModalRef { get; set; } = default!;
 
     private int PageSize { get; set; } = 11;
@@ -78,7 +77,7 @@ public partial class Projects : ComponentBase
             var adjustedEndDate = EndDate?.Date.AddDays(1).AddSeconds(-1);
             
             var token = await AuthStateProvider.GetToken();
-            
+
             var paginationParameters = new PaginationParameters
             {
                 PageNumber = PageNumber,
@@ -87,13 +86,12 @@ public partial class Projects : ComponentBase
                 SortBy = sortBy,
                 SortOrder = sortOrder
             };
-
-            PaginatedProjectsList = await ProjectService.GetByUserId(
+            
+            PaginatedProjectsList = await ProjectService.GetArchivedByUserId(
                 userId,
                 paginationParameters,
                 StartDate,
                 adjustedEndDate,
-                false,
                 $"Bearer {token}"
             );
             
@@ -104,36 +102,7 @@ public partial class Projects : ComponentBase
             Console.WriteLine($"Error loading projects: {exception.Message}");
         }
     }
-
-    private async Task ShowCreateProjectModal()
-    {
-        NewProject = new CreateProjectDto();
-
-        await ProjectModalRef.Show();
-    }
-
-    private async Task HideCreateProjectModal()
-    {
-        await ProjectModalRef.Hide();
-    }
-
-    private async Task CreateProject()
-    {
-        try
-        {
-            NewProject.UserId = await AuthStateProvider.GetUserIdAsync();
-
-            var token = await AuthStateProvider.GetToken();
-            await ProjectService.CreateAsync(NewProject, $"Bearer {token}");
-            await LoadProjectsAsync();
-            await HideCreateProjectModal();
-        }
-        catch (Exception exception)
-        {
-            Console.WriteLine($"Error creating project: {exception.Message}");
-        }
-    }
-
+    
     private async Task DeleteProject(Guid projectId)
     {
         try

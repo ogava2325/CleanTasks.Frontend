@@ -44,7 +44,6 @@ public partial class Kanban : ComponentBase
     private Guid columnToDeleteId;
 
     private ProjectDto CurrentProject { get; set; } = new();
-
     private bool IsEditingTitle { get; set; }
     private string EditTitle { get; set; } = default!;
 
