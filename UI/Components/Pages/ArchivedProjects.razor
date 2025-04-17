@@ -1,0 +1,127 @@
+@page "/ArchivedProjects"
+@using Domain.Dtos.Project
+@using UI.Components.Projects
+<Container Margin="Margin.Is0.Is2.OnY" Padding="Padding.Is3.OnX" Fluid>
+    <Row Class="border rounded p-3 mt-4 mb-4 align-items-end" Margin="Margin.Is1.OnX">
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop.Is8">
+            <Field>
+                <FieldLabel>Search</FieldLabel>
+                <TextEdit
+                    Placeholder="Search by name..."
+                    Background="Background.Light"
+                    Class="w-100"
+                    @bind-Text="@SearchTerm"/>
+            </Field>
+        </Column>
+
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnTablet.Is2.OnDesktop.Is2">
+            <Field>
+                <FieldLabel>Sort by</FieldLabel>
+                <Select
+                    Background="Background.Light"
+                    Class="w-100"
+                    @bind-SelectedValue="@SelectedSortOption">
+                    <SelectItem Value="ProjectSortOption.NameAsc">Name (A → Z)</SelectItem>
+                    <SelectItem Value="ProjectSortOption.NameDesc">Name (Z → A)</SelectItem>
+                    <SelectItem Value="ProjectSortOption.CreatedAsc">Created (Oldest)</SelectItem>
+                    <SelectItem Value="ProjectSortOption.CreatedDesc">Created (Newest)</SelectItem>
+                </Select>
+            </Field>
+        </Column>
+
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnTablet.Is2.OnDesktop.Is2"
+                Class="text-end mt-2 mt-md-0" Margin="Margin.Is3.FromBottom">
+            <Dropdown Class="w-100">
+                <DropdownToggle Color="Color.Primary">
+                    &nbsp; Filter
+                    <Icon Name="IconName.Filter"/>
+                </DropdownToggle>
+                <DropdownMenu>
+                    <Div Padding="Padding.Is2" @onclick:stopPropagation="true">
+                        <Field>
+                            <FieldLabel>
+                                Start Date
+                            </FieldLabel>
+                            <DatePicker @bind-Date="StartDate"/>
+                        </Field>
+                        <DropdownDivider/>
+                        <Field>
+                            <FieldLabel>
+                                End Date
+                            </FieldLabel>
+                            <DatePicker @bind-Date="EndDate"/>
+                        </Field>
+                        <Row TextAlignment="TextAlignment.Center">
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Button Color="Color.Secondary" Clicked="@ClearFiltersAsync">
+                                    Clear
+                                </Button>
+                                <Button Color="Color.Primary" Clicked="@LoadProjectsAsync">
+                                    <Icon Name="IconName.Filter"/>
+                                    &nbsp;Apply
+                                </Button>
+                            </Column>
+                        </Row>
+                    </Div>
+                </DropdownMenu>
+            </Dropdown>
+        </Column>
+    </Row>
+
+    <Row Class="mt-3 align-items-stretch">
+        @if (PaginatedProjectsList is not null)
+        {
+            @foreach (var project in PaginatedProjectsList.Items)
+            {
+                <Column ColumnSize="ColumnSize.Is6.OnTablet.Is6.OnMobile.Is5.OnDesktop.Is4.OnWidescreen.Is4.OnFullHD"
+                        Class="mb-4">
+                    <ProjectCard Project="@project" OnDelete="DeleteProject"/>
+                </Column>
+            }
+
+            @if (!PaginatedProjectsList.Items.Any())
+            {
+                <Row Class="d-flex align-items-center justify-content-center"
+                     Style="min-height: 50vh">
+                    <Column ColumnSize="ColumnSize.Is8" Class="text-center">
+                        <Icon Name="IconName.Inbox" Size="IconSize.Is3" Class="mb-3 text-muted"/>
+                        <Heading Size="HeadingSize.Is4">No Projects Found</Heading>
+                        <Paragraph>
+                            Try adjusting your search, or create a new project to get started!
+                        </Paragraph>
+                    </Column>
+                </Row>
+            }
+
+        }
+    </Row>
+
+    <Row Class="fixed-bottom" Style="margin-left: 230px;">
+        @if (PaginatedProjectsList != null)
+        {
+            <Pagination Alignment="Alignment.Center">
+                <PaginationItem Disabled="@(!PaginatedProjectsList.HasPreviousPage)">
+                    <PaginationLink Previous @onclick="GoToPreviousPage">
+                        <span aria-hidden="true">«</span>
+                    </PaginationLink>
+                </PaginationItem>
+
+                @for (var i = 1; i <= PaginatedProjectsList.TotalPages; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <PaginationItem @key="pageNumberAsString" Active="(i == PaginatedProjectsList.PageNumber)">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActivePage">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                }
+
+                <PaginationItem Disabled="@(!PaginatedProjectsList.HasNextPage)">
+                    <PaginationLink Next @onclick="GoToNextPage">
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
+            </Pagination>
+        }
+    </Row>
+</Container>

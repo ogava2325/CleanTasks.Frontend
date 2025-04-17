@@ -10,7 +10,9 @@
             <Heading Size="HeadingSize.Is4" Style="margin: 0;">About Project</Heading>
         </Div>
 
-        <Button Color="Color.Primary" Clicked="@StartEditing">
+        <Button Color="Color.Primary" 
+                Clicked="@StartEditing"
+                Disabled="@CurrentProject.IsArchived">
             Edit
         </Button>
     </Div>
