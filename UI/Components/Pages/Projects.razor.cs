@@ -1,17 +1,20 @@
 using Domain.Dtos.Project;
 using Domain.Dtos.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
 using services.External;
 using UI.Components.Modals;
 using UI.Services;
 
 namespace UI.Components.Pages;
 
-public partial class Projects : ComponentBase
+public partial class Projects : ComponentBase, IAsyncDisposable
 {
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private CustomAuthStateProvider AuthStateProvider { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private ILogger<Projects> Logger { get; set; } = default!;
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
 
     private PaginatedList<ProjectDto>? PaginatedProjectsList { get; set; }
 
@@ -23,8 +26,9 @@ public partial class Projects : ComponentBase
 
     private DateTimeOffset? StartDate { get; set; }
     private DateTimeOffset? EndDate { get; set; }
-
-
+    
+    private HubConnection HubConnection { get; set; } = default!;
+    
     private ProjectSortOption _selectedSortOption = ProjectSortOption.CreatedDesc;
 
     private ProjectSortOption SelectedSortOption
@@ -66,8 +70,34 @@ public partial class Projects : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await LoadProjectsAsync();
+        await InitializeSignalRAsync();
     }
 
+    private async Task InitializeSignalRAsync()
+    {
+        var token = await AuthStateProvider.GetToken();
+        var hubUrl = Configuration["HubUrl"];
+        
+        HubConnection = new HubConnectionBuilder()
+            .WithUrl(hubUrl, options =>
+            {
+                options.AccessTokenProvider = () => Task.FromResult(token)!;
+            })
+            .WithAutomaticReconnect()
+            .Build();
+        
+        await HubConnection.StartAsync();
+        
+        HubConnection.On<Guid, Guid>("UserAdded", async (projectId, userId) =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadProjectsAsync();
+                StateHasChanged();
+            });
+        });
+    }
+    
     private async Task LoadProjectsAsync()
     {
         try
@@ -179,5 +209,10 @@ public partial class Projects : ComponentBase
         StartDate = null;
         EndDate = null;
         await LoadProjectsAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await HubConnection.DisposeAsync();
     }
 }
