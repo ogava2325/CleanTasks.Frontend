@@ -18,6 +18,7 @@
       <PackageReference Include="Blazorise.LoadingIndicator" Version="1.6.2" />
       <PackageReference Include="Blazorise.RichTextEdit" Version="1.7.3" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.15" />
       <PackageReference Include="NewsAPI" Version="0.7.0" />
       <PackageReference Include="Refit" Version="8.0.0" />
       <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
