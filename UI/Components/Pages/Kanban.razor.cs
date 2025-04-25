@@ -366,11 +366,19 @@ public partial class Kanban : ComponentBase
         {
             var token = await AuthStateProvider.GetToken();
             await ProjectService.UpdateAsync(CurrentProject.Id, projectToUpdate, $"Bearer {token}");
-            await LoadProjectAsync();
         }
-        catch (Exception e)
+        catch (ApiException e)
         {
-            Console.WriteLine($"Error saving project title: {e.Message}");
+            if (e.StatusCode == HttpStatusCode.Forbidden)
+            {
+                await ShowErrorNotification("You don't have permission to edit project's title.");
+            }
+
+            Console.WriteLine($"Error saving project's title: {e.Message}");
+        }
+        finally
+        {
+            await LoadProjectAsync();
         }
     }
 }
