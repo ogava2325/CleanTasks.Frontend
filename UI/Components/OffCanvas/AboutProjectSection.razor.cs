@@ -1,6 +1,9 @@
+using System.Net;
+using Blazorise;
 using Blazorise.RichTextEdit;
 using Domain.Dtos.Project;
 using Microsoft.AspNetCore.Components;
+using Refit;
 using services.External;
 using UI.Services;
 
@@ -11,6 +14,7 @@ public partial class AboutProjectSection : ComponentBase
     [Parameter] public ProjectDto CurrentProject { get; set; } = new();
     [Inject] public IProjectService ProjectService { get; set; } = default!;
     [Inject] public CustomAuthStateProvider AuthStateProvider { get; set; } = default!;
+    [Inject] private INotificationService NotificationService { get; set; } = default!;
     
     private bool IsEditing { get; set; }
 
@@ -47,13 +51,21 @@ public partial class AboutProjectSection : ComponentBase
 
         try
         {
-            var token = await AuthStateProvider.GetToken(); 
+            var token = await AuthStateProvider.GetToken();
             await ProjectService.UpdateAsync(CurrentProject.Id, projectToUpdate, $"Bearer {token}");
-            await LoadProjectAsync();
         }
-        catch (Exception e)
+        catch (ApiException e)
         {
+            if (e.StatusCode == HttpStatusCode.Forbidden)
+            {
+                await ShowErrorNotification("You don't have permission to edit project's title.");
+            }
+            
             Console.WriteLine($"Error saving project description: {e.Message}");
+        }
+        finally
+        {
+            await LoadProjectAsync();
         }
         
         IsEditing = false;
@@ -70,5 +82,10 @@ public partial class AboutProjectSection : ComponentBase
         {
             await richTextEdit.SetHtmlAsync(CurrentProject.Description);
         }
+    }
+    
+    private Task ShowErrorNotification(string message)
+    {
+        return NotificationService.Error(message);
     }
 }

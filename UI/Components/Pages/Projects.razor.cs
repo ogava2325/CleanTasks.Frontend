@@ -1,7 +1,10 @@
+using System.Net;
+using Blazorise;
 using Domain.Dtos.Project;
 using Domain.Dtos.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Refit;
 using services.External;
 using UI.Components.Modals;
 using UI.Services;
@@ -15,7 +18,7 @@ public partial class Projects : ComponentBase, IAsyncDisposable
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     [Inject] private ILogger<Projects> Logger { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
-
+    [Inject] private INotificationService NotificationService { get; set; } = default!;
     private PaginatedList<ProjectDto>? PaginatedProjectsList { get; set; }
 
     private CreateProjectDto NewProject { get; set; } = new();
@@ -166,17 +169,20 @@ public partial class Projects : ComponentBase, IAsyncDisposable
 
     private async Task DeleteProject(Guid projectId)
     {
+        var token = await AuthStateProvider.GetToken();
         try
         {
-            var token = await AuthStateProvider.GetToken();
-            
             await ProjectService.DeleteAsync(projectId, $"Bearer {token}");
             await LoadProjectsAsync();
+            await ShowSuccessNotification("Project deleted successfully.");
             StateHasChanged();
         }
-        catch (Exception ex)
+        catch(ApiException e)
         {
-            Console.WriteLine($"Error deleting project: {ex.Message}");
+            if(e.StatusCode == HttpStatusCode.Forbidden)
+            {
+                await ShowErrorNotification("You do not have permission to delete this project.");
+            }
         }
     }
 
@@ -214,5 +220,15 @@ public partial class Projects : ComponentBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await HubConnection.DisposeAsync();
+    }
+    
+    private Task ShowErrorNotification(string message)
+    {
+        return NotificationService.Error(message);
+    }
+    
+    private Task ShowSuccessNotification(string message)
+    {
+        return NotificationService.Success(message);
     }
 }

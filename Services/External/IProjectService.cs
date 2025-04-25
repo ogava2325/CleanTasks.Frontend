@@ -51,9 +51,9 @@ public interface IProjectService
         [Header("Authorization")] string authorization
     );
 
-    [Post("/api/projects/{projectId}/users")]
+    [Post("/api/projects/{id}/users")]
     Task AddUserToProjectAsync(
-        Guid projectId,
+        Guid id,
         [Body] AddUserToProjectsDto command,
         [Header("Authorization")] string authorization
     );

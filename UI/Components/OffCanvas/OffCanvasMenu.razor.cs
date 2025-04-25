@@ -16,6 +16,7 @@ public partial class OffCanvasMenu : ComponentBase
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private CustomAuthStateProvider AuthStateProvider { get; set; } = default!;
     [Inject] private INotificationService NotificationService { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     private Offcanvas OffcanvasRef { get; set; } = default!;
 
     private OffcanvasPage _currentPage = OffcanvasPage.Main;
@@ -80,6 +81,25 @@ public partial class OffCanvasMenu : ComponentBase
             if(e.StatusCode == HttpStatusCode.Forbidden)
             {
                 await ShowErrorNotification("You do not have permission to restore this project.");
+            }
+        }
+
+        await OnProjectRestore.InvokeAsync();
+    }
+    
+    private async Task DeleteProjectAsync()
+    {
+        var token = await AuthStateProvider.GetToken();
+        try
+        {
+            await ProjectService.DeleteAsync(CurrentProject.Id, $"Bearer {token}");
+            NavigationManager.NavigateTo("Projects");
+        }
+        catch(ApiException e)
+        {
+            if(e.StatusCode == HttpStatusCode.Forbidden)
+            {
+                await ShowErrorNotification("You do not have permission to delete this project.");
             }
         }
 
