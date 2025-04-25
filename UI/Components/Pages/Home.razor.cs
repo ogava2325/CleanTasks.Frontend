@@ -73,13 +73,6 @@ public partial class Home : ComponentBase
         NavigationManager.NavigateTo(url, forceLoad: true);
     }
     
-    private MarkupString RedirectToLogin()
-    {
-        NavigationManager.NavigateTo("login", forceLoad: true);
-
-        return (MarkupString)"<p>Redirecting to login...</p>";
-    }
-    
     private string FormatCount(int count, string label)
     {
         return count == 1 ? $"1 {label}" : $"{count} {label}s";
