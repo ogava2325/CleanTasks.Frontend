@@ -99,6 +99,24 @@ public partial class Projects : ComponentBase, IAsyncDisposable
                 StateHasChanged();
             });
         });
+        
+        HubConnection.On<Guid>("ProjectDeleted", async (projectId) =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadProjectsAsync();
+                StateHasChanged();
+            });
+        });
+        
+        HubConnection.On<Guid>("ProjectUpdated", async (projectId) =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadProjectsAsync();
+                StateHasChanged();
+            });
+        });
     }
     
     private async Task LoadProjectsAsync()
@@ -173,16 +191,19 @@ public partial class Projects : ComponentBase, IAsyncDisposable
         try
         {
             await ProjectService.DeleteAsync(projectId, $"Bearer {token}");
-            await LoadProjectsAsync();
             await ShowSuccessNotification("Project deleted successfully.");
-            StateHasChanged();
         }
-        catch(ApiException e)
+        catch (ApiException e)
         {
-            if(e.StatusCode == HttpStatusCode.Forbidden)
+            if (e.StatusCode == HttpStatusCode.Forbidden)
             {
                 await ShowErrorNotification("You do not have permission to delete this project.");
             }
+        }
+        finally
+        {
+            await LoadProjectsAsync();
+            StateHasChanged();
         }
     }
 

@@ -31,7 +31,7 @@ public partial class AboutProjectSection : ComponentBase
     {
         try
         {
-            var token = AuthStateProvider.GetToken();
+            var token = await AuthStateProvider.GetToken();
             CurrentProject = await ProjectService.GetById(CurrentProject.Id, $"Bearer {token}");
         }
         catch (Exception e)
