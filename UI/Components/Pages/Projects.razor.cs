@@ -91,7 +91,7 @@ public partial class Projects : ComponentBase, IAsyncDisposable
         
         await HubConnection.StartAsync();
         
-        HubConnection.On<Guid, Guid>("UserAdded", async (projectId, userId) =>
+        HubConnection.On<Guid>("UserAdded", async (projectId) =>
         {
             await InvokeAsync(async () =>
             {
@@ -110,6 +110,15 @@ public partial class Projects : ComponentBase, IAsyncDisposable
         });
         
         HubConnection.On<Guid>("ProjectUpdated", async (projectId) =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadProjectsAsync();
+                StateHasChanged();
+            });
+        });
+        
+        HubConnection.On<Guid, Guid>("UserRemoved", async (projectId, userId) =>
         {
             await InvokeAsync(async () =>
             {

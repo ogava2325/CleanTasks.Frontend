@@ -52,9 +52,16 @@ public interface IProjectService
     );
 
     [Post("/api/projects/{id}/users")]
-    Task AddUserToProjectAsync(
+    Task<ResultDto<string>> AddUserToProjectAsync(
         Guid id,
-        [Body] AddUserToProjectsDto command,
+        [Body] AddUserToProjectCommandDto command,
+        [Header("Authorization")] string authorization
+    );
+    
+    [Delete("/api/projects/{id}/users")]
+    Task<ResultDto<string>> RemoveUserFromProjectAsync(
+        Guid id,
+        [Body] RemoveUserFromProjectDto command,
         [Header("Authorization")] string authorization
     );
     
@@ -67,6 +74,21 @@ public interface IProjectService
     [Put("/api/projects/{id}/restore")]
     Task RestoreAsync(
         Guid id,
+        [Header("Authorization")] string authorization
+    );
+    
+    [Get("/api/projects/{projectId}/users")]
+    Task<PaginatedList<ProjectMemberModel>> GetProjectMembers(
+        [Query] Guid projectId,
+        [Query] PaginationParameters paginationParameters,
+        [Header("Authorization")] string authorization
+    );
+    
+    [Put("/api/projects/{id}/users/{userId}/role")]
+    Task<ResultDto<string>> ChangeUserRoleAsync(
+        [Query] Guid id,
+        [Query] Guid userId,
+        [Body] ChangeUserRoleDto command,
         [Header("Authorization")] string authorization
     );
 }
