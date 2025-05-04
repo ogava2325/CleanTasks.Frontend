@@ -264,31 +264,6 @@ public partial class Kanban : ComponentBase
         _deleteConfirmationModal.Show();
     }
 
-    private async Task OnInviteUserClicked(Guid userId)
-    {
-        var token = await AuthStateProvider.GetToken();
-
-        var addUserCommand = new AddUserToProjectsDto()
-        {
-            ProjectId = ProjectId,
-            UserId = userId
-        };
-
-        try
-        {
-            await ProjectService.AddUserToProjectAsync(ProjectId, addUserCommand, $"Bearer {token}");
-        }
-        catch (ApiException e)
-        {
-            if (e.StatusCode == HttpStatusCode.Forbidden)
-            {
-                await ShowErrorNotification("You don't have permission to add users to this project.");
-            }
-
-            Console.WriteLine($"Error adding user to project: {e.Message}");
-        }
-    }
-
     private async Task ShowInviteUserModal()
     {
         await InviteUserModalRef.Show();

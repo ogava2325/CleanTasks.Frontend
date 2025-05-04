@@ -1,29 +1,75 @@
-@using Domain.Dtos.User
+@using Blazorise.DataGrid
+@using Domain.Dtos.Project
+@using Domain.Enums
 <Modal @ref="ModalRef">
-    <ModalContent Centered>
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
         <ModalHeader>
             <ModalTitle>Invite users to project</ModalTitle>
-            <CloseButton Clicked="OnCancel"/>
+            <CloseButton/>
         </ModalHeader>
         <ModalBody>
             <Field>
-                <Label>Select User</Label>
-                <SelectList TItem="@UserDto"
-                            TValue="Guid"
-                            Data="@Users"
-                            TextField="@((item)=>item.Email)"
-                            ValueField="@((item)=>item.Id)"
-                            @bind-SelectedValue="SelectedUserId">
-                </SelectList>
+                <Row Class="g-2">
+                    <Column Size="7">
+                        <TextEdit @bind-Text="InviteEmail"
+                                  Placeholder="Enter email address"
+                                  DebounceInterval="300"
+                                  Role="TextRole.Email"/>
+                    </Column>
+                    <Column Size="3">
+                        <Select @bind-SelectedValue="SelectedRoleOption">
+                            @foreach (var role in Enum.GetValues<Role>())
+                            {
+                                <SelectItem Value="@role">@role.ToString()</SelectItem>
+                            }
+                        </Select>
+                    </Column>
+                    <Column Size="2">
+                        <Button Color="Color.Primary" Clicked="InviteMemberAsync">
+                            Invite
+                        </Button>
+                    </Column>
+                </Row>
             </Field>
+
+            <DataGrid TItem="ProjectMemberModel"
+                      Data="@Users"
+                      TotalItems="@TotalUsers"
+                      @bind-SelectedRow="selectedMember"
+                      Editable
+                      Responsive
+                      PageSize="5"
+                      ShowPager
+                      RowUpdated="@OnRowUpdated"
+                      RowRemoved="@OnRowRemoved"
+                      CommandMode="DataGridCommandMode.ButtonRow"
+                      EditMode="DataGridEditMode.Form">
+                <DataGridColumns>
+                    <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
+                        <SaveCommandTemplate>
+                            <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
+                        </SaveCommandTemplate>
+                        <CancelCommandTemplate>
+                            <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+                        </CancelCommandTemplate>
+                    </DataGridCommandColumn>
+                    <DataGridColumn Field="@nameof(ProjectMemberModel.Email)" Caption="Email" Editable/>
+                    <DataGridColumn Field="@nameof(ProjectMemberModel.Role)" Caption="Role" Editable>
+                        <EditTemplate>
+                            <Select TValue="string" SelectedValue="@context.Item.Role" @onchange="@(e => OnSelectedValueChanged(e.Value?.ToString() ?? string.Empty, context.Item))">
+                                @foreach (var role in Enum.GetValues<Role>())
+                                {
+                                    <SelectItem Value="@role">@role.ToString()</SelectItem>
+                                }
+                            </Select>
+                        </EditTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+                <ButtonRowTemplate>
+                    <Button Color="Color.Primary" Disabled="@(selectedMember is null)" Clicked="context.EditCommand.Clicked">Edit</Button>
+                    <Button Color="Color.Danger" Disabled="@(selectedMember is null)" Clicked="context.DeleteCommand.Clicked">Delete</Button>
+                </ButtonRowTemplate>
+            </DataGrid>
         </ModalBody>
-        <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@OnCancel">
-                Cancel
-            </Button>
-            <Button Color="Color.Primary" Clicked="@OnInvite">
-                Invite user
-            </Button>
-        </ModalFooter>
     </ModalContent>
 </Modal>
